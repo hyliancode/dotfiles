@@ -1,0 +1,20 @@
+#!/bin/bash
+
+source functions || exit 1
+
+pgrep -x wlsunset && killall -q -w wlsunset
+
+[[ -f "${HOME}/.gps_coordinates" ]] || error "GPS coordinates file not found. Run 'gpscoords' to get the GPS coordinates first."
+
+{ IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
+[[ -z "${latitude}" || -z "${longitude}" ]] && error "Failed to get GPS coordinates."
+
+wlsunset_args=(
+    -g 0.6
+    -l "${latitude}"
+    -L "${longitude}"
+    -t 4000
+    -T 6000
+)
+
+wlsunset "${wlsunset_args[@]}" &

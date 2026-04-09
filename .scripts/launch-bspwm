@@ -1,0 +1,9 @@
+#!/bin/bash
+
+pgrep -x "sxhkd" || sxhkd &
+pgrep -x "polybar" || polybar &
+pgrep -x "picom" || picom &
+pgrep -x "dunst" || dunst &
+set-wall
+
+bspwm &

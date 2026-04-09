@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source functions || exit 1
+
+wall_dir="${HOME}/.walls"
+[[ -d "${wall_dir}" ]] || error "'${wall_dir}' does not exist"
+
+shopt -s globstar nullglob
+files=("${wall_dir}"/**/*.jpg)
+shopt -u globstar nullglob
+
+if [[ -n "${files[*]}" ]]; then
+    wall="${files[RANDOM % ${#files[@]}]}"
+else
+    alert_exit "No '.jpg' files found in '${wall_dir}'"
+fi
+
+if command -v feh; then
+    feh --bg-scale "${wall}" &
+elif command -v swaybg; then
+    swaybg -i "${wall}" &
+else
+    error "Neither 'feh' nor 'swaybg' is installed. Cannot set wallpaper."
+fi

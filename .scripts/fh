@@ -1,0 +1,8 @@
+#!/bin/bash
+
+fzf_args=(
+	--no-sort
+	--exact
+)
+
+fzf < "${HOME}/.bash_history" | xclip -selection clipboard -r

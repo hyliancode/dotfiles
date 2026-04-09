@@ -1,0 +1,7 @@
+#!/bin/bash
+
+pgrep -x "waybar" || waybar &
+pgrep -x "dunst" || dunst &
+set-wall
+
+niri-session &

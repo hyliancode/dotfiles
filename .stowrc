@@ -1,0 +1,6 @@
+--verbose=2
+
+--ignore=.git
+--ignore=.stowrc
+--ignore=install-dotfiles
+--ignore=readme.md

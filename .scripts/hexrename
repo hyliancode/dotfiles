@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source functions || exit 1
+
+if [[ "${#}" -ne 1 || "${1}" == *"."* ]]; then
+    echo "usage: ${0} ext|all (without '.')"
+    exit 1
+fi
+
+if [[ "${1}" == "all" ]]; then
+    find "${PWD}" -maxdepth 1 -type f \( -iname "*.*" -o ! -name "*.*" \) -print0
+else
+    search_extension="${1}"
+    find "${PWD}" -maxdepth 1 -type f -iname "*.${search_extension}" -print0
+fi
+
+readarray -t files < <(find "${PWD}" -maxdepth 1 -type f -iname "*.${search_extension}")
+[[ -n "${files[*]}" ]] || error "No files found with ext '${search_extension}'"
+
+printf "%s\n" "${files[@]}"
+confirm "Rename ${#files[@]} file(s)?" || exit 0
+
+for file in "${files[@]}"; do
+    random_hex=$(openssl rand -hex 4)
+    basename="${file##*/}"
+    if [[ "${basename}" == *.* ]]; then
+        file_extension="${basename##*.}"
+        new_file_name="${random_hex}.${file_extension}"
+    else
+        new_file_name="${random_hex}"
+    fi
+    new_file_name="${new_file_name,,}"
+    echo "$(basename "${file}") -> ${new_file_name}"
+    mv -n "${file}" "${new_file_name}"
+done

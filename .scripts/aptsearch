@@ -1,0 +1,6 @@
+#!/bin/bash
+
+apt-cache search . \
+    | fzf --multi --exact --prompt "Search (tab for multi-select): " \
+    | awk '{print $1}' \
+    | xargs -r sudo apt-get install

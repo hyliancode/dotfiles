@@ -1,0 +1,9 @@
+#!/bin/bash
+
+source .scripts/functions || exit 1
+
+[[ "${PWD}" == "${HOME}/dotfiles" ]] || error "Run this script from '${HOME}/dotfiles'."
+command -v stow 1> /dev/null || error "GNU Stow is required but it's not installed. Aborting."
+
+stow . || error "Failed to stow dotfiles. Aborting."
+alert_wait "Dotfiles stowed successfully."

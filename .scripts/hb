@@ -1,0 +1,40 @@
+#!/bin/bash
+set -euo pipefail
+
+
+! command -v trash-put && sudo apt-get install -y -- trash-cli
+! command -v rsync && sudo apt-get install -y -- rsync
+
+
+files_folders=(
+    "${HOME}/.bashrc"
+    "${HOME}/.config/autostart"
+    "${HOME}/.config/BraveSoftware"
+    "${HOME}/.config/cinnamon/spices/calendar@cinnamon.org/13.json"
+    "${HOME}/.config/easyeffects/output/loudness-eq.json"
+    "${HOME}/.config/mpd"
+    "${HOME}/.config/mpv"
+    "${HOME}/.config/MusicBrainz/Picard.ini"
+    "${HOME}/.config/ncmpcpp"
+    "${HOME}/.config/redshift.conf"
+    "${HOME}/.config/rofi"
+    "${HOME}/.config/transmission/settings.json"
+    "${HOME}/.local/share/applications"
+    "${HOME}/Pictures"
+    "${HOME}/.scripts"
+)
+
+
+stuff_path="$(lsblk -no mountpoints | grep "/STUFF$" | head -n 1)"
+[[ ! -d "${stuff_path}" ]] && exit 1
+backup_path_base="${stuff_path}/linux/homeback"
+[[ ! -d "${backup_path_base}" ]] && mkdir -p "${backup_path_base}"
+backup_name="$(date +%Y-%m-%d)-homeback"
+backup_path="${backup_path_base}/${backup_name}"
+
+
+tar -czvf "${backup_path}.tar.gz" "${files_folders[@]}"
+ls -rdt -- "${backup_path_base}/"*.tar.gz | head -n -2 | xargs -r -I {} trash-put -fv {}
+
+
+####

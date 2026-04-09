@@ -1,0 +1,10 @@
+article-sort-order date-desc
+feed-sort-order title-asc
+show-read-articles no
+show-read-feeds no
+
+auto-reload yes
+browser brave-browser
+max-items 50
+refresh-on-startup yes
+scrolloff 4

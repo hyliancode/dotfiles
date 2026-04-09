@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# General helper functions for the scripts in .scripts directory
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    echo "These are helper functions meant to be sourced, not executed directly."
+    echo "Usage: 'source functions' at top of your script."
+    exit 1
+fi
+
+error() {
+    echo "[ERROR] ${1}" >&2
+    exit 1
+}
+
+error_wait() {
+    echo "[ERROR] ${1}" >&2
+    read -s -r -p "Press enter to continue..."
+    exit 1
+}
+
+alert() {
+    echo "[ALERT] ${1}"
+}
+
+alert_exit() {
+    echo "[ALERT] ${1}"
+    exit 0
+}
+
+alert_wait() {
+    echo "[ALERT] ${1}"
+    read -s -r -p "Press enter to continue..."
+    exit 0
+}
+
+confirm() {
+    read -p "${1} [y/N]: "
+    case "${REPLY}" in
+        [yY]) return 0 ;;
+        *) return 1 ;;
+    esac
+}

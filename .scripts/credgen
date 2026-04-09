@@ -1,0 +1,117 @@
+#!/bin/bash
+set -euo pipefail
+
+
+amount=4
+vowels=(a e i o u y)
+consonants=(b c d f g h j k l m n p q r s t v w x z)
+
+
+get_vowel() {
+    local return
+    return=$(printf "%s\n" "${vowels[@]}" | shuf | head -n 1)
+    printf "%s\n" "${return}"
+}
+
+
+get_consonant() {
+    local return
+    return=$(printf "%s\n" "${consonants[@]}" | shuf | head -n 1)
+    printf "%s\n" "${return}"
+}
+
+
+capitalize_letter_20() {
+    local string="${1}"
+    local indecies=(0 3)
+    local index=$((RANDOM % 2))
+    local position=${indecies[${index}]}
+    local before=${string:0:position}
+    local char=${string:position:1}
+    local after=${string:position+1}
+    printf "%s\n" "${before}${char^^}${after}"
+}
+
+
+replace_letter_with_number_20() {
+    local string="${1}"
+    local indecies=(2 5)
+    local index=$((RANDOM % 2))
+    local position=${indecies[${index}]}
+    local before=${string:0:position}
+    local after=${string:position+1}
+    local random_digit=$((RANDOM % 10))
+    printf "%s\n" "${before}${random_digit}${after}"
+}
+
+
+capitalize_letter_26() {
+    local string="${1}"
+    local indecies=(0 3 5)
+    local index=$((RANDOM % 3))
+    local position=${indecies[${index}]}
+    local before=${string:0:position}
+    local char=${string:position:1}
+    local after=${string:position+1}
+    printf "%s\n" "${before}${char^^}${after}"
+}
+
+
+replace_letter_with_number_26() {
+    local string="${1}"
+    local indecies=(2 5 7)
+    local index=$((RANDOM % 3))
+    local position=${indecies[${index}]}
+    local before=${string:0:position}
+    local after=${string:position+1}
+    local random_digit=$((RANDOM % 10))
+    printf "%s\n" "${before}${random_digit}${after}"
+}
+
+
+printf "%s\n" "usernames:"
+printf "%s\n" "=========="
+for _ in $(seq 1 ${amount}); do
+    sextet_username_1="$(get_consonant | tr '[:lower:]' '[:upper:]')$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)"
+    sextet_username_2="$(get_consonant | tr '[:lower:]' '[:upper:]')$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)"
+    printf "%s\n" "${sextet_username_1}${sextet_username_2}"
+done
+printf "%s\n"
+printf "%s\n" "passwords (20):"
+printf "%s\n" "==============="
+for _ in $(seq 1 ${amount}); do
+    sextet_capital="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)"
+    sextet_capital="$(capitalize_letter_20 "${sextet_capital}")"
+    sextet_number="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)"
+    sextet_number="$(replace_letter_with_number_20 "${sextet_number}")"
+    sextet_plain="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)"
+    sextet_array=("${sextet_capital}" "${sextet_number}" "${sextet_plain}")
+    printf "%s\n" "${sextet_array[@]}" | shuf | paste -sd-
+done
+printf "%s\n"
+printf "%s\n" "passwords (26):"
+printf "%s\n" "==============="
+for _ in $(seq 1 ${amount}); do
+    octet_capital="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)$(get_vowel)$(get_consonant)"
+    octet_capital="$(capitalize_letter_26 "${octet_capital}")"
+    octet_number="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)$(get_vowel)$(get_consonant)"
+    octet_number="$(replace_letter_with_number_26 "${octet_number}")"
+    octet_plain="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)$(get_vowel)$(get_consonant)"
+    octet_array=("${octet_capital}" "${octet_number}" "${octet_plain}")
+    printf "%s\n" "${octet_array[@]}" | shuf | paste -sd-
+done
+printf "%s\n"
+printf "%s\n" "passwords (26) (pattern-less):"
+printf "%s\n" "=============================="
+for _ in $(seq 1 ${amount}); do
+    octet_capital="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)$(get_vowel)$(get_consonant)"
+    octet_capital="$(capitalize_letter_26 "${octet_capital}")"
+    octet_number="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)$(get_vowel)$(get_consonant)"
+    octet_number="$(replace_letter_with_number_26 "${octet_number}")"
+    octet_plain="$(get_consonant)$(get_vowel)$(get_consonant)$(get_consonant)$(get_vowel)$(get_consonant)$(get_vowel)$(get_consonant)"
+    octet_string="${octet_capital}-${octet_number}-${octet_plain}"
+    printf "%s\n" "${octet_string}" | fold -w1 | shuf | tr -d '\n' | xargs printf "%s\n"
+done
+
+
+####

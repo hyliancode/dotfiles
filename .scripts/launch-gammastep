@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source functions || exit 1
+
+pgrep -x gammastep && killall -q -w gammastep
+
+[[ -f "${HOME}/.gps_coordinates" ]] || error "GPS coordinates file not found. Run 'gpscoords' to get the GPS coordinates first."
+
+{ IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
+[[ -z "${latitude}" || -z "${longitude}" ]] && error "Failed to get GPS coordinates."
+
+gammastep_args=(
+    -l "${latitude}:${longitude}"
+    -b 1.0:0.6
+    -t 6000:4000
+    -m randr
+)
+
+gammastep "${gammastep_args[@]}" &

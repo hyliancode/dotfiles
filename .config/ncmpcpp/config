@@ -1,0 +1,17 @@
+# formatting
+song_columns_list_format = (20)[]{a} (6f)[green]{NE} (40)[white]{t|f:Title} (20)[cyan]{b} (6f)[magenta]{l}
+song_status_format = {%a - %t}|{%f}
+song_library_format = {%n - }{%t}|{%f}
+media_library_primary_tag = artist
+media_library_albums_split_by_date = no
+media_library_hide_album_dates = yes
+
+# general
+lines_scrolled = 1
+
+# visualizer
+visualizer_data_source = "/tmp/mpd.fifo"
+visualizer_output_name = "mpd_fifo"
+visualizer_in_stereo = "yes"
+visualizer_type = "spectrum"
+visualizer_look = "+|"

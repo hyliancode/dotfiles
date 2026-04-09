@@ -1,0 +1,14 @@
+#!/bin/bash
+
+fzf_args=(
+    --color "pointer:green,marker:green"
+    --exact
+    --multi
+    --preview-label-pos="bottom"
+    --preview-label="tab: multi-select"
+    --preview-window "down:60%:wrap"
+    --preview "yay -Siia {1}"
+)
+
+yay -Slqa | fzf "${fzf_args[@]}" | xargs -r yay -S --noconfirm
+sudo updatedb
