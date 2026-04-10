@@ -1,5 +1,27 @@
 #!/bin/bash
 
+PATH_PATHS=(
+    "/bin"
+    "/sbin"
+    "/usr/bin"
+    "/usr/local/bin"
+    "/usr/local/sbin"
+    "/usr/sbin"
+    "/var/lib/flatpak/exports/bin"
+    "${HOME}/.local/bin"
+    "${HOME}/.local/share/flatpak/exports/bin"
+    "${HOME}/.scripts"
+)
+
+export PATH="$(IFS=:; echo "${PATH_PATHS[*]}")"
+
+export EDITOR=edit
+export BROWSER=brave-browser
+export HISTCONTROL=ignoreboth
+export HISTFILESIZE=2000
+export HISTSIZE=1000
+
+
 if [[ -x /usr/bin/dircolors ]]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
