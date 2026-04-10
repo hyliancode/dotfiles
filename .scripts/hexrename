@@ -1,6 +1,13 @@
 #!/bin/bash
 
-source functions || exit 1
+error() { echo "${1}"; exit 1; }
+confirm() {
+    read -p "${1} [y/N]: "
+    case "${REPLY:-N}" in
+        [yY]*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
 
 if [[ "${#}" -ne 1 || "${1}" == *"."* ]]; then
     echo "usage: ${0} ext|all (without '.')"
@@ -18,7 +25,7 @@ readarray -t files < <(find "${PWD}" -maxdepth 1 -type f -iname "*.${search_exte
 [[ -n "${files[*]}" ]] || error "No files found with ext '${search_extension}'"
 
 printf "%s\n" "${files[@]}"
-confirm "Rename ${#files[@]} file(s)?" || exit 0
+confirm "Rename ${#files[@]} file(s)?" || exit 1
 
 for file in "${files[@]}"; do
     random_hex=$(openssl rand -hex 4)

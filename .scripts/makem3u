@@ -1,6 +1,4 @@
 #!/bin/bash
-set -euo pipefail
-
 
 folder="$(realpath "${1}")"
 [[ -z "${folder}" || ! -d "${folder}" ]] && exit 1
@@ -16,8 +14,4 @@ file_types=(
 readarray -t files < <(find "${folder}" -type f \( "${file_types[@]}" \) -exec realpath {} \; | sort -V)
 [[ -z "${files[*]}" ]] && exit 1
 
-
 printf "%s\n" "${files[@]}" > "${m3u_name}.m3u"
-
-
-####
