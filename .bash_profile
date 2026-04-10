@@ -14,6 +14,7 @@ PATH_PATHS=(
 export PATH="$(IFS=:; echo "${PATH_PATHS[*]}")"
 
 export EDITOR=edit
+export BROWSER=brave-browser
 export HISTCONTROL=ignoreboth
 export HISTFILESIZE=2000
 export HISTSIZE=1000
