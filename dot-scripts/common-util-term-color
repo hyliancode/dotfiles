@@ -9,19 +9,10 @@ command -v jq 1>/dev/null || error "Please install 'jq' to use this script."
 readarray -t options < <(jq -r 'del(.comment) | keys[]' "${HOME}/.color_schemes.json" || catch_warn "Failed to read color schemes")
 options+=("quit")
 
-if [[ -t 0 ]]; then
-    PS3="Select a color scheme: "
-    select scheme in "${options[@]}"; do
-        [[ "${scheme}" == "quit" ]] && exit 0
-        [[ -z "${scheme}" ]] && echo "Invalid selection" && continue
-        break
-    done
-elif [[ -n "$DISPLAY" || -n "$WAYLAND_DISPLAY" ]]; then
-    # rofi or similar GUI prompt could be implemented here if desired, but for now we'll just default to the first scheme
-    scheme="${options[0]}"
-else
-    error "Environment not recognized."
-fi
+scheme="$(common-util-selector "Select a color scheme: " "${options[@]}" || catch_warn "Failed to get color scheme selection")"
+[[ -z "${scheme}" ]] && error "No color scheme selected. Exiting."
+
+[[ "${scheme}" == "quit" ]] && echo "Exiting without changes." && exit 0
 
 readarray -t colors < <(jq -r ".\"${scheme}\"[]" "${HOME}/.color_schemes.json" || catch_warn "Failed to read color scheme '${scheme}'")
 [[ ${#colors[@]} -eq 0 ]] && error "No colors found for scheme '${scheme}'"
