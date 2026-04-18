@@ -1,4 +1,5 @@
 {
+    "comment": "Alt-black should background and alt-white should be foreground.",
     "catppuccin": {
         "black": "#11111b",
         "red": "#f38ba8",
@@ -8,11 +9,17 @@
         "magenta": "#b4befe",
         "cyan": "#94e2d5",
         "white": "#cdd6f4",
-        "foreground": "#cdd6f4",
-        "background": "#11111b"
+        "alt-black": "#181825",
+        "alt-red": "#f38ba8",
+        "alt-green": "#a6e3a1",
+        "alt-yellow": "#f9e2af",
+        "alt-blue": "#89b4fa",
+        "alt-magenta": "#b4befe",
+        "alt-cyan": "#94e2d5",
+        "alt-white": "#cdd6f4"
     },
     "gruvbox": {
-        "black": "#282828",
+        "black": "#1d2021",
         "red": "#fb4934",
         "green": "#b8bb26",
         "yellow": "#fabd2f",
@@ -20,8 +27,14 @@
         "magenta": "#d3869b",
         "cyan": "#8ec07c",
         "white": "#ebdbb2",
-        "foreground": "#ebdbb2",
-        "background": "#282828"
+        "alt-black": "#282828",
+        "alt-red": "#fb4934",
+        "alt-green": "#b8bb26",
+        "alt-yellow": "#fabd2f",
+        "alt-blue": "#83a598",
+        "alt-magenta": "#d3869b",
+        "alt-cyan": "#8ec07c",
+        "alt-white": "#ebdbb2"
     },
     "nord": {
         "black": "#2e3440",
@@ -32,8 +45,14 @@
         "magenta": "#b48ead",
         "cyan": "#8fbcbb",
         "white": "#e5e9f0",
-        "foreground": "#e5e9f0",
-        "background": "#2e3440"
+        "alt-black": "#2e3440",
+        "alt-red": "#bf616a",
+        "alt-green": "#a3be8c",
+        "alt-yellow": "#ebcb8b",
+        "alt-blue": "#5e81ac",
+        "alt-magenta": "#b48ead",
+        "alt-cyan": "#8fbcbb",
+        "alt-white": "#e5e9f0"
     },
     "forest-night": {
         "black": "#011627",
@@ -44,8 +63,14 @@
         "magenta": "#c792ea",
         "cyan": "#89ddff",
         "white": "#ffffff",
-        "foreground": "#ffffff",
-        "background": "#011627"
+        "alt-black": "#011627",
+        "alt-red": "#ef5350",
+        "alt-green": "#c3e88d",
+        "alt-yellow": "#ffeb95",
+        "alt-blue": "#82aaff",
+        "alt-magenta": "#c792ea",
+        "alt-cyan": "#89ddff",
+        "alt-white": "#ffffff"
     },
     "tokyo-night": {
         "black": "#1a1b26",
@@ -56,8 +81,14 @@
         "magenta": "#bb9af7",
         "cyan": "#7dcfff",
         "white": "#a9b1d6",
-        "foreground": "#a9b1d6",
-        "background": "#1a1b26"
+        "alt-black": "#1a1b26",
+        "alt-red": "#f7768e",
+        "alt-green": "#9ece6a",
+        "alt-yellow": "#e0af68",
+        "alt-blue": "#7aa2f7",
+        "alt-magenta": "#bb9af7",
+        "alt-cyan": "#7dcfff",
+        "alt-white": "#a9b1d6"
     },
     "forest": {
         "black": "#3B2E1E",
@@ -68,7 +99,13 @@
         "magenta": "#907A48",
         "cyan": "#D4BF88",
         "white": "#E6DEB9",
-        "foreground": "#E6DEB9",
-        "background": "#3B2E1E"
+        "alt-black": "#3B2E1E",
+        "alt-red": "#4B6B3C",
+        "alt-green": "#3A4928",
+        "alt-yellow": "#907A48",
+        "alt-blue": "#D4BF88",
+        "alt-magenta": "#907A48",
+        "alt-cyan": "#D4BF88",
+        "alt-white": "#E6DEB9"
     }
 }

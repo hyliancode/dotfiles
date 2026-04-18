@@ -31,7 +31,7 @@ paths_to_remove=(
 for path_to_remove in "${paths_to_remove[@]}"; do
 	if [[ -f "${path_to_remove}" || -d "${path_to_remove}" || -L "${path_to_remove}" ]]; then
 		echo "Moving '${path_to_remove}' to trash"
-		trash-put -fv "${path_to_remove}" || error "Failed to move '${path_to_remove}' to trash"
+		trash-put -f "${path_to_remove}" || error "Failed to move '${path_to_remove}' to trash"
 	else
 		echo "No existing '${path_to_remove}' found, skipping"
 		continue
