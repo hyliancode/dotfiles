@@ -1,0 +1,12 @@
+#!/bin/bash
+
+error() { echo "[ERROR] ${1}"; exit 1; }
+
+pgrep -x hyprsunset && killall -q -w hyprsunset
+
+[[ -f "${HOME}/.gps_coordinates" ]] || error "GPS coordinates file not found. Run 'common-util-gpscoords' first."
+
+{ IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
+[[ -z "${latitude}" || -z "${longitude}" ]] && error "Failed to get GPS coordinates."
+
+# will be replacing wlsunset with hyprsunset to try

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+error() { echo "[ERROR] ${1:-Unknown error}"; exit 1; }
+
+[[ "${PWD}" == "${HOME}/dotfiles" ]] || error "Run this script from '${HOME}/dotfiles'"
+
+for dependency in trash-put stow; do
+	command -v "${dependency}" &>/dev/null || error "Install ${dependency} before running script"
+done
+
+# these need to be manually added - needed so the script can make-way for 'stow' command
+paths_to_remove=(
+	"${HOME}/.bash_profile"
+	"${HOME}/.bashrc"
+	"${HOME}/.color_schemes.json"
+	"${HOME}/.config/bspwm"
+	"${HOME}/.config/easyeffects"
+	"${HOME}/.config/mpd"
+	"${HOME}/.config/mpv"
+	"${HOME}/.config/ncmpcpp"
+	"${HOME}/.config/rofi"
+	"${HOME}/.config/sxhkd"
+	"${HOME}/.local/bin/gencreds"
+	"${HOME}/.local/bin/gencreds.swift"
+	"${HOME}/.profile"
+	"${HOME}/.scripts"
+	"${HOME}/.walls"
+	"${HOME}/.xinitrc"
+)
+
+for path_to_remove in "${paths_to_remove[@]}"; do
+	if [[ -f "${path_to_remove}" || -d "${path_to_remove}" || -L "${path_to_remove}" ]]; then
+		echo "Moving '${path_to_remove}' to trash"
+		trash-put -fv "${path_to_remove}" || error "Failed to move '${path_to_remove}' to trash"
+	else
+		echo "No existing '${path_to_remove}' found, skipping"
+		continue
+	fi
+done
+
+stow .

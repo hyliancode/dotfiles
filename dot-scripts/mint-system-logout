@@ -1,0 +1,17 @@
+#!/bin/bash
+
+term="$(xprop -root _NET_ACTIVE_WINDOW | awk '{print $NF}')"
+term="$(printf "0x%08x" "${term}")"
+readarray -t open_windows < <(wmctrl -l | grep -v "${term}" | awk '{print $1}')
+
+for open_window in "${open_windows[@]}"; do
+	window_type=$(xprop -id "${open_window}" _NET_WM_WINDOW_TYPE | awk '{print $NF}')
+	[[ "${window_type}" == "_NET_WM_WINDOW_TYPE_NORMAL" ]] || continue
+	wmctrl -ic "${open_window}"
+	while xprop -id "${open_window}" &>/dev/null; do
+		sleep 0.2
+	done
+done
+
+session_id="$(loginctl session-status | awk 'NR==1{print $1}')"
+loginctl terminate-session "${session_id}"

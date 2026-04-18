@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pgrep -x "waybar" && pkill -w -x waybar
+waybar &

@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+
+
+fzf_options=(
+    -e
+    --query="${1:-}"
+    --multi
+)
+
+
+readarray -t to_install < <(apt-cache pkgnames | fzf "${fzf_options[@]}")
+[[ -z "${to_install[*]}" ]] && exit 1
+printf -- "-> %s\n" "${to_install[@]}"
+read -p "press enter to install..."
+sudo apt-get install -y -- "${to_install[@]}"
+
+
+####

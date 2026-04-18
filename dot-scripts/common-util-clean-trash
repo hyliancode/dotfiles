@@ -1,0 +1,7 @@
+#!/bin/bash
+
+error() { echo "[ERROR] ${1:Unknown error}"; exit 1; }
+command -v trash-empty || error "trash-empty command not found. Please install trash-cli package."
+trash-empty -fv
+echo "Syncing..."
+sync

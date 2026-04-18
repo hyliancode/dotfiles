@@ -1,0 +1,7 @@
+#!/bin/bash
+
+read -p "${1:-Confirm?} [y/N]: "
+case "${REPLY:-N}" in
+	^[yY] ) return 0 ;;
+	* ) return 1 ;;
+esac

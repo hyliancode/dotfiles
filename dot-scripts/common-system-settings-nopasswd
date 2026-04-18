@@ -1,0 +1,28 @@
+#!/bin/bash
+
+nopasswd_bin_paths=(
+	"/bin/chvt"
+)
+
+for nopasswd_bin_path in "${nopasswd_bin_paths[@]}"; do
+	nopasswd_bin_name="${nopasswd_bin_path##*/}"
+	nopasswd_bin_system_path="$(which "${nopasswd_bin_name}")"
+
+	if [[ -z "${nopasswd_bin_system_path}" ]]; then
+		echo "[WARNING] Binary '${nopasswd_bin_path}' not found. Skipping."
+		continue
+	fi
+
+	if [[ -f /etc/sudoers.d/"${nopasswd_bin_name}" ]]; then
+		echo "[INFO] File already exists '/etc/sudoers.d/${nopasswd_bin_name}'. Skipping."
+		continue
+	fi
+
+	if [[ "${nopasswd_bin_path}" == "${nopasswd_bin_system_path}" ]]; then
+		echo "${USER} ALL=(ALL) NOPASSWD: ${nopasswd_bin_path}" | sudo tee /etc/sudoers.d/"${nopasswd_bin_name}"
+		sudo chmod 440 /etc/sudoers.d/"${nopasswd_bin_name}"
+	else
+		echo "[WARNING] Paths do not match. User entered '${nopasswd_bin_path}' and 'which' returned '${nopasswd_bin_system_path}'. Skipping."
+		continue
+	fi
+done

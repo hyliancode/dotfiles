@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# check for mounted STUFF drive
+# check for backup dir '${STUFF}/${date}/BraveSoftware.tar.gz'
+# tar 'BraveSoftware' to backup dir
+# keep only recent 2 ${date} folders

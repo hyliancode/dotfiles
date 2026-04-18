@@ -1,0 +1,19 @@
+#!/bin/bash
+
+error() { echo "${1}"; exit 1; }
+
+pgrep -x redshift && killall -q -w redshift
+
+[[ -f "${HOME}/.gps_coordinates" ]] || error "GPS coordinates file not found. Run 'gpscoords' to get the GPS coordinates first."
+
+{ IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
+[[ -z "${latitude}" || -z "${longitude}" ]] && error "Failed to get GPS coordinates."
+
+redshift_args=(
+    -l "${latitude}:${longitude}"
+    -b 1.0:0.6
+    -t 6000:4000
+    -m randr
+)
+
+redshift "${redshift_args[@]}" &

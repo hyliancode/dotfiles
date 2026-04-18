@@ -1,0 +1,8 @@
+--dir=~/dotfiles
+--target=~
+--dotfiles
+--verbose=2
+
+--ignore=^install$
+--ignore=README.*
+--ignore=.stowrc

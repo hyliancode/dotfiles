@@ -1,0 +1,25 @@
+@theme "theme.rasi"
+
+
+configuration {
+	modes: "window,drun,filebrowser";
+	font: "mono 12";
+	show-icons: true;
+	terminal: "rofi-sensible-terminal";
+	run-shell-command: "{terminal} -e {cmd}";
+	window-command: "wmctrl -i -R {window}";
+	window-match-fields: "all";
+	icon-theme: "Papirus-Dark";
+	drun-show-actions: true;
+	drun-display-format: "{name}";
+	drun-url-launcher: "xdg-open";
+	cycle: false;
+	combi-modes: "window,drun";
+    display-combi: "(v -_-)>";
+	window-format: "> {c} {t}";
+	combi-display-format: "{mode} {text}";
+    filebrowser {
+          directories-first: true;
+          sorting-method: "name";
+    }
+}

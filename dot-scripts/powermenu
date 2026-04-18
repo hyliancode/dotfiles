@@ -1,0 +1,33 @@
+#!/bin/bash
+
+rofi_confirm() {
+	local rofi_args reply
+	rofi_args=(
+		-i
+		-dmenu
+		-p "${1} (v -_-)>"
+	)
+    reply="$(echo -e "No\nYes" | rofi "${rofi_args[@]}" || true)"
+    case "${reply}" in
+        [yY]*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+options=(
+    "Suspend"
+    "Logout"
+    "Reboot"
+    "Shutdown"
+    "Reboot into BIOS"
+)
+
+selected_option="$(printf "%s\n" "${options[@]}" | rofi -i -dmenu -p "(v -_-)>" || true)"
+case "${selected_option}" in
+    "Suspend") systemctl suspend ;;
+    "Logout") rofi_confirm "Logout?" && loginctl terminate-session "${XDG_SESSION_ID}" ;;
+    "Reboot") rofi_confirm "Reboot?" && systemctl reboot ;;
+    "Shutdown") rofi_confirm "Shutdown?" && systemctl poweroff ;;
+    "Reboot into BIOS") rofi_confirm "Reboot into BIOS?" && systemctl reboot --firmware-setup ;;
+    *) exit 1 ;;
+esac
