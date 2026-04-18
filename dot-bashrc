@@ -5,7 +5,7 @@ case $- in
       *) return;;
 esac
 
-PATH_PATHS="\
+export PATH="\
 /bin:\
 /sbin:\
 /usr/bin:\
@@ -17,13 +17,14 @@ ${HOME}/.local/bin:\
 ${HOME}/.local/share/flatpak/exports/bin:\
 ${HOME}/.scripts"
 
-export PATH="${PATH_PATHS}"
-
 export BROWSER=brave-browser
 export EDITOR=edit
+export SUDO_EDITOR=edit
 export HISTCONTROL=ignoreboth
 export HISTFILESIZE=2000
 export HISTSIZE=1000
+export LESS="-F -g -i -M -R -S -w -z-6 -X"
+export PAGER=less
 export PS1="\[\e[90m\] \w\[\e[0m\] > "
 force_color_prompt=yes
 shopt -s checkwinsize

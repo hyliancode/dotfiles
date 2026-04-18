@@ -1,17 +1,28 @@
 #!/bin/bash
 
-folder="$(realpath "${1}")"
-[[ -z "${folder}" || ! -d "${folder}" ]] && exit 1
-m3u_name="$(basename "${folder}")"
-file_types=(
-    -name "*.flac" -o
-    -name "*.m4b" -o
-    -name "*.mkv" -o
-    -name "*.mp3" -o
-    -name "*.mp4" -o
-    -name "*.webm"
-)
-readarray -t files < <(find "${folder}" -type f \( "${file_types[@]}" \) -exec realpath {} \; | sort -V)
-[[ -z "${files[*]}" ]] && exit 1
+error() { echo "[ERROR] ${1:Unknown error}"; exit 1; }
 
-printf "%s\n" "${files[@]}" > "${m3u_name}.m3u"
+if [ "${#}" -ne 2 ]; then
+    error "Usage: ${0} <webapp-name> <webapp-url>"
+fi
+
+webapp_name="${1}"
+webapp_url="${2}"
+ping -qnc 1 "${webapp_url}" || error "Unable to reach '${webapp_url}'"
+
+desktop_file="${HOME}/.local/share/applications/${webapp_name}.desktop"
+cat > "${desktop_file}" <<- EOF
+    [Desktop Entry]
+    Name=${webapp_name}
+    Exec=xdg-open ${webapp_url}
+    Type=Application
+    Categories=Network;WebBrowser;
+EOF
+
+if [[ -f "${desktop_file}" ]]; then
+    chmod +x "${desktop_file}" || error "Failed to set executable permission on '${desktop_file}'"
+    echo "Webapp '${webapp_name}' created successfully."
+else
+    error "Failed to create desktop entry for '${webapp_name}'"
+fi
+

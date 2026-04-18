@@ -34,5 +34,41 @@
         "white": "#e5e9f0",
         "foreground": "#e5e9f0",
         "background": "#2e3440"
+    },
+    "forest-night": {
+        "black": "#011627",
+        "red": "#ef5350",
+        "green": "#c3e88d",
+        "yellow": "#ffeb95",
+        "blue": "#82aaff",
+        "magenta": "#c792ea",
+        "cyan": "#89ddff",
+        "white": "#ffffff",
+        "foreground": "#ffffff",
+        "background": "#011627"
+    },
+    "tokyo-night": {
+        "black": "#1a1b26",
+        "red": "#f7768e",
+        "green": "#9ece6a",
+        "yellow": "#e0af68",
+        "blue": "#7aa2f7",
+        "magenta": "#bb9af7",
+        "cyan": "#7dcfff",
+        "white": "#a9b1d6",
+        "foreground": "#a9b1d6",
+        "background": "#1a1b26"
+    },
+    "forest": {
+        "black": "#3B2E1E",
+        "red": "#4B6B3C",
+        "green": "#3A4928",
+        "yellow": "#907A48",
+        "blue": "#D4BF88",
+        "magenta": "#907A48",
+        "cyan": "#D4BF88",
+        "white": "#E6DEB9",
+        "foreground": "#E6DEB9",
+        "background": "#3B2E1E"
     }
 }
