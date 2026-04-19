@@ -71,7 +71,7 @@ options=(
     "Change bootmode: Graphical"
 )
 
-selected_option="$(selopt "${launcher}" "Select an action:" "${options[@]}" || catch -w "No option selected")"
+selected_option="$(selopt "${launcher}" "Select an action:" "${options[@]}" || catch -i "No option selected")"
 case "${selected_option}" in
     "Suspend") _suspend ;;
     "Logout") _logout ;;

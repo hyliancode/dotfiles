@@ -2,17 +2,12 @@
 set -euo pipefail
 
 error() {
-    echo "[ERROR] ${1}" 1>&2
+    echo "${1}" 1>&2
     exit 1
 }
 
-warning() {
-    echo "[WARNING] ${1}" 1>&2
-    return 0
-}
-
 info() {
-    echo "[INFO] ${1}" 1>&2
+    echo "${1}" 1>&2
     return 0
 }
 
@@ -23,7 +18,6 @@ fi
 
 case "${1}" in
     -e ) error "${2}" ;;
-    -w ) warning "${2}" ;;
     -i ) info "${2}" ;;
     * ) error "Usage: ${0##*/} <-e|-w|-i> <message>" ;;
 esac
