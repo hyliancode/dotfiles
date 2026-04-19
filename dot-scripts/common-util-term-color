@@ -1,20 +1,18 @@
 #!/bin/bash
 
-error() { echo "[ERROR] ${1:-Unknown error}" 1>&2; exit 1; }
-catch_warn() { echo "[WARNING] ${1:-Operation failed}" 1>&2; return 0; }
+source "${HOME}/.scripts/common-util-helper-functions" || exit 1
 
-command -v jq 1>/dev/null || error "Please install 'jq' to use this script."
+check_command "jq"
 
 [[ -f "${HOME}/.color_schemes.json" ]] || error "Color schemes file not found at ${HOME}/.color_schemes.json"
-readarray -t options < <(jq -r 'del(.comment) | keys[]' "${HOME}/.color_schemes.json" || catch_warn "Failed to read color schemes")
+readarray -t options < <(jq -r 'del(.comment) | keys[]' "${HOME}/.color_schemes.json" || warning "Failed to read color schemes")
 options+=("quit")
 
-scheme="$(common-util-selector "Select a color scheme: " "${options[@]}" || catch_warn "Failed to get color scheme selection")"
+scheme="$(select_option -rofi "Select a color scheme: " "${options[@]}" || warning "Failed to get color scheme selection")"
 [[ -z "${scheme}" ]] && error "No color scheme selected. Exiting."
-
 [[ "${scheme}" == "quit" ]] && echo "Exiting without changes." && exit 0
 
-readarray -t colors < <(jq -r ".\"${scheme}\"[]" "${HOME}/.color_schemes.json" || catch_warn "Failed to read color scheme '${scheme}'")
+readarray -t colors < <(jq -r ".\"${scheme}\"[]" "${HOME}/.color_schemes.json" || warning "Failed to read color scheme '${scheme}'")
 [[ ${#colors[@]} -eq 0 ]] && error "No colors found for scheme '${scheme}'"
 [[ ${#colors[@]} -ne 16 ]] && error "Expected 16 colors for scheme '${scheme}', found ${#colors[@]}"
 
@@ -24,13 +22,11 @@ done
 
 # Foreground (Color 7 - White/Alt-White)
 printf "\e]10;%s\a" "${colors[7]}"
-
 # Background (Color 0 - Black/Alt-Black)
 printf "\e]11;%s\a" "${colors[8]}"
-
 # Cursor (Color 7 - White/Alt-White)
 printf "\e]12;%s\a" "${colors[7]}"
 
 echo "Terminal colors set to ${scheme}."
 
-{ command -v neofetch && neofetch; } || { command -v fastfetch && fastfetch; }
+{ check_command "neofetch" && neofetch; } || { check_command "fastfetch" && fastfetch; }

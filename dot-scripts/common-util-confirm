@@ -1,7 +1,0 @@
-#!/bin/bash
-
-read -p "${1:-Confirm?} [y/N]: "
-case "${REPLY:-N}" in
-	^[yY] ) exit 0 ;;
-	* ) exit 1 ;;
-esac

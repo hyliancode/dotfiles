@@ -107,5 +107,23 @@
         "alt-magenta": "#907A48",
         "alt-cyan": "#D4BF88",
         "alt-white": "#E6DEB9"
+    },
+    "monochrome": {
+        "black": "#000000",
+        "red": "#242424",
+        "green": "#494949",
+        "yellow": "#6D6D6D",
+        "blue": "#929292",
+        "magenta": "#B6B6B6",
+        "cyan": "#DBDBDB",
+        "white": "#FFFFFF",
+        "alt-black": "#111111",
+        "alt-red": "#323232",
+        "alt-green": "#545454",
+        "alt-yellow": "#757575",
+        "alt-blue": "#979797",
+        "alt-magenta": "#B8B8B8",
+        "alt-cyan": "#D9D9D9",
+        "alt-white": "#FFFFFF"
     }
 }
