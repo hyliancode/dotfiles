@@ -2,6 +2,6 @@
 
 read -p "${1:-Confirm?} [y/N]: "
 case "${REPLY:-N}" in
-	^[yY] ) return 0 ;;
-	* ) return 1 ;;
+	^[yY] ) exit 0 ;;
+	* ) exit 1 ;;
 esac
