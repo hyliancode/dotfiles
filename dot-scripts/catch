@@ -1,9 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
+usage() {
+    echo "Usage: ${0##*/} <-e|-i> <message>"
+    echo "  -e: Print error message to stderr and return with exit code 1"
+    echo "  -i: Print info message to stderr and return with exit code 0"
+    return 1
+}
+
 error() {
     echo "${1}" 1>&2
-    exit 1
+    return 1
 }
 
 info() {
@@ -11,13 +18,10 @@ info() {
     return 0
 }
 
-if [[ -z "${1}" || -z "${2}" ]]; then
-    echo "Usage: ${0##*/} <-e|-w|-i> <message>"
-    exit 1
-fi
+[[ -z "${1:-}" || -z "${2:-}" ]] && usage
 
-case "${1}" in
+case "${1:-}" in
     -e ) error "${2}" ;;
     -i ) info "${2}" ;;
-    * ) error "Usage: ${0##*/} <-e|-w|-i> <message>" ;;
+    * ) usage ;;
 esac

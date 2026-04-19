@@ -1,7 +1,37 @@
 #!/bin/bash
 set -euo pipefail
 
-launcher="-rofi"
+usage() {
+    echo "Usage: ${0##*/} [-noconfirm] [OPTION]"
+    echo
+    echo "Options:"
+    echo "  -noconfirm Skip confirmation prompts"
+    echo "  -s Suspend"
+    echo "  -l Logout"
+    echo "  -r Reboot"
+    echo "  -o Shutdown"
+    echo "  -b Reboot into BIOS"
+    echo "  -t Change bootmode: TTY"
+    echo "  -g Change bootmode: Graphical"
+    return 1
+}
+
+while getopts "nslrobtg" opt; do
+  case $opt in
+    n ) skip_confirm="1" ;;
+    s ) selected_option="Suspend" ;;
+    l ) selected_option="Logout" ;;
+    r ) selected_option="Reboot" ;;
+    o ) selected_option="Shutdown" ;;
+    b ) selected_option="Reboot into BIOS" ;;
+    t ) selected_option="Change bootmode: TTY" ;;
+    g ) selected_option="Change bootmode: Graphical" ;;
+    * ) usage ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+skip_confirm="${skip_confirm:-0}"
 
 _graceful_window_close() {
     local term open_windows window_type
@@ -14,51 +44,51 @@ _graceful_window_close() {
         [[ "${window_type}" == "_NET_WM_WINDOW_TYPE_NORMAL" ]] || continue
         wmctrl -ic "${open_window}"
         while xprop -id "${open_window}" &>/dev/null; do
-            sleep 0.2
+            sleep 0.1
         done
     done
 }
 
 _suspend() {
-    confirm "${launcher}" "Are you sure you want to suspend?"
+    (( skip_confirm )) || confirm -rofi "Are you sure you want to suspend?"
     systemctl suspend
 }
 
 _logout() {
-    confirm "${launcher}" "Are you sure you want to log out?"
+    (( skip_confirm )) || confirm -rofi "Are you sure you want to log out?"
     _graceful_window_close
     session_id="$(loginctl session-status | awk 'NR==1{print $1}')"
     loginctl terminate-session "${session_id}"
 }
 
 _reboot() {
-    confirm "${launcher}" "Are you sure you want to reboot?"
+    (( skip_confirm )) || confirm -rofi "Are you sure you want to reboot?"
     _graceful_window_close
     systemctl reboot
 }
 
 _shutdown() {
-    confirm "${launcher}" "Are you sure you want to shut down?"
+    (( skip_confirm )) || confirm -rofi "Are you sure you want to shut down?"
     _graceful_window_close
     systemctl poweroff
 }
 
 _reboot_bios() {
-    confirm "${launcher}" "Are you sure you want to reboot into BIOS?"
+    (( skip_confirm )) || confirm -rofi "Are you sure you want to reboot into BIOS?"
     _graceful_window_close
     systemctl reboot --firmware-setup
 }
 
 _bootmode_tty() {
-    confirm "${launcher}" "Change bootmode to TTY?"
+    (( skip_confirm )) || confirm -rofi "Change bootmode to TTY?"
     pkexec systemctl set-default multi-user.target
-    selopt "${launcher}" "Bootmode changed to TTY" "Ok"
+    selopt -rofi "Bootmode changed to TTY" "Ok"
 }
 
 _bootmode_graphical() {
-    confirm "${launcher}" "Change bootmode to Graphical?"
+    (( skip_confirm )) || confirm -rofi "Change bootmode to Graphical?"
     pkexec systemctl set-default graphical.target
-    selopt "${launcher}" "Bootmode changed to Graphical" "Ok"
+    selopt -rofi "Bootmode changed to Graphical" "Ok"
 }
 
 options=(
@@ -71,14 +101,21 @@ options=(
     "Change bootmode: Graphical"
 )
 
-selected_option="$(selopt "${launcher}" "Select an action:" "${options[@]}" || catch -i "No option selected")"
+if [[ -z "${1:-}" ]]; then
+    selected_option="$(selopt -rofi "Select an action:" "${options[@]}" || catch -i "No option selected")"
+elif [[ " ${options[*]} " == *" ${1} "* ]]; then
+    selected_option="${1}"
+else
+    catch -e "Invalid option: ${1}"
+fi
+
 case "${selected_option}" in
-    "Suspend") _suspend ;;
-    "Logout") _logout ;;
-    "Reboot") _reboot ;;
-    "Shutdown") _shutdown ;;
-    "Reboot into BIOS") _reboot_bios ;;
-    "Change bootmode: TTY") _bootmode_tty ;;
-    "Change bootmode: Graphical") _bootmode_graphical ;;
-    *) exit 1 ;;
+    "Suspend"|"-s") _suspend ;;
+    "Logout"|"-l") _logout ;;
+    "Reboot"|"-r") _reboot ;;
+    "Shutdown"|"-o") _shutdown ;;
+    "Reboot into BIOS"|"-b") _reboot_bios ;;
+    "Change bootmode: TTY"|"-t") _bootmode_tty ;;
+    "Change bootmode: Graphical"|"-g") _bootmode_graphical ;;
+    *) usage ;;
 esac

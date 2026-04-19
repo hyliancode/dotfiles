@@ -4,4 +4,7 @@ echo -e "\e[32mUpdate apt packages\e[0m"
 sudo apt-get update
 sudo apt-get upgrade -y
 
-[[ -d /usr/lib/modules/$(uname -r) ]] || { common-util-confirm "Linux kernel has been updated. Reboot?" && mint-system-reboot; }
+if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
+    confirm "Linux kernel has been updated. Reboot now?" && \
+    mint-powermenu -noconfirm -r
+fi
