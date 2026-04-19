@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euo pipefail
+
+select_option() {
+    local launcher prompt options usage selection
+    launcher="${1}"
+    prompt="${2}"
+    shift 2
+    options=("${@}")
+    usage="Usage: ${0##*/} <-term|-rofi|-hypr> <prompt> <options_array>"
+    fzf_args=(--prompt="${prompt} (v -_-)> ")
+    rofi_args=(-dmenu -p "${prompt} (v -_-)>")
+    hypr_args=(-p "${prompt} (v -_-)>")
+
+    [[ -z "${launcher}" ]] && catch -e "${usage}"
+    [[ -z "${prompt}" ]] && catch -e "${usage}"
+    (( "${#options[@]}" <= 0 )) && catch -e "${usage}"
+
+    case "${launcher}" in
+        -term ) selection="$(printf "%s\n" "${options[@]}" | fzf "${fzf_args[@]}" || catch -e "Failed to get selection from GUI prompt")" ;;
+        -rofi ) selection="$(printf "%s\n" "${options[@]}" | rofi "${rofi_args[@]}" || catch -e "Failed to get selection from GUI prompt")" ;;
+        -hypr ) selection="$(printf "%s\n" "${options[@]}" | hyprlauncher "${hypr_args[@]}" || catch -e "Failed to get selection from GUI prompt")" ;;
+        * ) catch -e "Unsupported launcher: ${launcher}" ;;
+    esac
+
+    echo "${selection}"
+}
+
+select_option "${1:-}" "${2:-}" "${@:3}"
