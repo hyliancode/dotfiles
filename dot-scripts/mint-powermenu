@@ -101,12 +101,10 @@ options=(
     "Change bootmode: Graphical"
 )
 
-if [[ -z "${1:-}" ]]; then
+if [[ -z "${selected_option:-}" ]]; then
     selected_option="$(selopt -rofi "Select an action:" "${options[@]}" || catch -i "No option selected")"
-elif [[ " ${options[*]} " == *" ${1} "* ]]; then
-    selected_option="${1}"
 else
-    catch -e "Invalid option: ${1}"
+    selected_option="${selected_option}"
 fi
 
 case "${selected_option}" in
