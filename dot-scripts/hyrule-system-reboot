@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# graceful close open windows
-
-systemctl reboot --no-wall

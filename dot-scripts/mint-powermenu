@@ -1,0 +1,69 @@
+#!/bin/bash
+
+source "${HOME}/.scripts/common-functions"
+
+launcher="-rofi"
+
+graceful_window_close() {
+    local term open_windows window_type
+    term="$(xprop -root _NET_ACTIVE_WINDOW | awk '{print $NF}')"
+    term="$(printf "0x%08x" "${term}")"
+    readarray -t open_windows < <(wmctrl -l | grep -v "${term}" | awk '{print $1}')
+
+    for open_window in "${open_windows[@]}"; do
+        window_type=$(xprop -id "${open_window}" _NET_WM_WINDOW_TYPE | awk '{print $NF}')
+        [[ "${window_type}" == "_NET_WM_WINDOW_TYPE_NORMAL" ]] || continue
+        wmctrl -ic "${open_window}"
+        while xprop -id "${open_window}" &>/dev/null; do
+            sleep 0.2
+        done
+    done
+}
+
+_suspend() {
+    confirm "${launcher}" "Are you sure you want to suspend?" || return 0
+    systemctl suspend
+}
+
+_logout() {
+    confirm "${launcher}" "Are you sure you want to log out?" || return 0
+    graceful_window_close
+    session_id="$(loginctl session-status | awk 'NR==1{print $1}')"
+    loginctl terminate-session "${session_id}"
+}
+
+_reboot() {
+    confirm "${launcher}" "Are you sure you want to reboot?" || return 0
+    graceful_window_close
+    systemctl reboot
+}
+
+_shutdown() {
+    confirm "${launcher}" "Are you sure you want to shut down?" || return 0
+    graceful_window_close
+    systemctl poweroff
+}
+
+_reboot_bios() {
+    confirm "${launcher}" "Are you sure you want to reboot into BIOS?" || return 0
+    graceful_window_close
+    systemctl reboot --firmware-setup
+}
+
+options=(
+    "Suspend"
+    "Logout"
+    "Reboot"
+    "Shutdown"
+    "Reboot into BIOS"
+)
+
+selected_option="$(select_option "${launcher}" "Select an action:" "${options[@]}" || warning "No option selected")"
+case "${selected_option}" in
+    "Suspend") _suspend ;;
+    "Logout") _logout ;;
+    "Reboot") _reboot ;;
+    "Shutdown") _shutdown ;;
+    "Reboot into BIOS") _reboot_bios ;;
+    *) exit 1 ;;
+esac

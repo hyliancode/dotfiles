@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo -e "\e[32mUpdate apt packages\e[0m"
 sudo apt-get update

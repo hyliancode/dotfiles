@@ -1,19 +1,36 @@
 #!/bin/bash
 
 error() {
-    echo "[ERROR] ${1:-Unknown error}" 1>&2
+    echo "[ERROR] ${1}" 1>&2
     exit 1
 }
 
 warning() {
-    echo "[WARNING] ${1:-Unknown warning}" 1>&2
+    echo "[WARNING] ${1}" 1>&2
+    return 0
 }
 
 confirm() {
-    read -p "${1:-Confirm?} [y/N]: "
-    case "${REPLY:-N}" in
-        [yY]* ) return 0 ;;
-        * ) return 1 ;;
+    local launcher prompt usage rofi_args
+    launcher="${1}"
+    prompt="${2}"
+    usage="Usage: ${0##*/} <-term|-rofi|-hypr> <prompt>"
+    rofi_args=(-dmenu -p "${prompt} (v -_-)>")
+
+    [[ -z "${launcher}" ]] && error "${usage}"
+    [[ -z "${prompt}" ]] && error "${usage}"
+
+    case "${launcher}" in
+        -term )
+            read -p "${prompt} [y/N]: "
+            case "${REPLY:-N}" in
+                [yY]* ) return 0 ;;
+                * ) return 1 ;;
+            esac
+            ;;
+        -rofi ) [[ "$(printf "Yes\nNo" | rofi "${rofi_args[@]}")" == "Yes" ]] || return 1 ;;
+        -hypr ) [[ "$(printf "Yes\nNo" | hyprlauncher -p "${prompt}")" == "Yes" ]] || return 1 ;;
+        * ) error "Unsupported launcher: ${launcher}" ;;
     esac
 }
 
@@ -23,8 +40,8 @@ check_command() {
 
 select_option() {
     local launcher prompt options usage selection
-    launcher="${1:-term}"
-    prompt="${2:-Select an option: }"
+    launcher="${1}"
+    prompt="${2}"
     shift 2
     options=("${@}")
     usage="Usage: ${0##*/} <-term|-rofi|-hypr> <prompt> <options_array>"
@@ -42,7 +59,9 @@ select_option() {
     }
 
     launch_rofi() {
-        selection="$(printf "%s\n" "${options[@]}" | rofi -dmenu -p "${prompt}" || error "Failed to get selection from GUI prompt")"
+        local rofi_args
+        rofi_args=(-dmenu -p "${prompt} (v -_-)>")
+        selection="$(printf "%s\n" "${options[@]}" | rofi "${rofi_args[@]}" || error "Failed to get selection from GUI prompt")"
     }
 
     launch_hypr() {
@@ -55,5 +74,6 @@ select_option() {
         -hypr ) launch_hypr ;;
         * ) error "Unsupported launcher: ${launcher}" ;;
     esac
+
     echo "${selection}"
 }
