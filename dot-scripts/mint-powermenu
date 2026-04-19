@@ -3,7 +3,7 @@ set -euo pipefail
 
 launcher="-rofi"
 
-graceful_window_close() {
+_graceful_window_close() {
     local term open_windows window_type
     term="$(xprop -root _NET_ACTIVE_WINDOW | awk '{print $NF}')"
     term="$(printf "0x%08x" "${term}")"
@@ -26,27 +26,39 @@ _suspend() {
 
 _logout() {
     confirm "${launcher}" "Are you sure you want to log out?"
-    graceful_window_close
+    _graceful_window_close
     session_id="$(loginctl session-status | awk 'NR==1{print $1}')"
     loginctl terminate-session "${session_id}"
 }
 
 _reboot() {
     confirm "${launcher}" "Are you sure you want to reboot?"
-    graceful_window_close
+    _graceful_window_close
     systemctl reboot
 }
 
 _shutdown() {
     confirm "${launcher}" "Are you sure you want to shut down?"
-    graceful_window_close
+    _graceful_window_close
     systemctl poweroff
 }
 
 _reboot_bios() {
     confirm "${launcher}" "Are you sure you want to reboot into BIOS?"
-    graceful_window_close
+    _graceful_window_close
     systemctl reboot --firmware-setup
+}
+
+_bootmode_tty() {
+    confirm "${launcher}" "Change bootmode to TTY?"
+    pkexec systemctl set-default multi-user.target
+    selopt "${launcher}" "Bootmode changed to TTY" "Ok"
+}
+
+_bootmode_graphical() {
+    confirm "${launcher}" "Change bootmode to Graphical?"
+    pkexec systemctl set-default graphical.target
+    selopt "${launcher}" "Bootmode changed to Graphical" "Ok"
 }
 
 options=(
@@ -55,6 +67,8 @@ options=(
     "Reboot"
     "Shutdown"
     "Reboot into BIOS"
+    "Change bootmode: TTY"
+    "Change bootmode: Graphical"
 )
 
 selected_option="$(selopt "${launcher}" "Select an action:" "${options[@]}" || catch -w "No option selected")"
@@ -64,5 +78,7 @@ case "${selected_option}" in
     "Reboot") _reboot ;;
     "Shutdown") _shutdown ;;
     "Reboot into BIOS") _reboot_bios ;;
+    "Change bootmode: TTY") _bootmode_tty ;;
+    "Change bootmode: Graphical") _bootmode_graphical ;;
     *) exit 1 ;;
 esac
