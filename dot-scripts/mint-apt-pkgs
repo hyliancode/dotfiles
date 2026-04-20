@@ -1,16 +1,17 @@
 #!/bin/bash
-set -euo pipefail
 
-chkcmd apt-get fzf
+chkcmd apt-get fzf || exit 1
 
 fzf_options=(
-    -e
+    --exact
+    --height 60%
+    --border
     --multi
 )
 
 _install() {
     readarray -t to_install < <(apt-cache pkgnames | fzf "${fzf_options[@]}")
-    [[ -n "${to_install[*]}" ]] || catch -e
+    [[ -n "${to_install[*]}" ]] || exit 0
     printf -- "Install: <%s>\n" "${to_install[@]}"
     read -p "Press enter to install..."
     sudo apt-get install -y -- "${to_install[@]}"
@@ -18,7 +19,7 @@ _install() {
 
 _remove() {
     readarray -t to_remove < <(dpkg --get-selections | grep -v deinstall | awk '{print $1}' | fzf "${fzf_options[@]}")
-    [[ -n "${to_remove[*]}" ]] || catch -e
+    [[ -n "${to_remove[*]}" ]] || exit 0
     printf -- "Remove: <%s>\n" "${to_remove[@]}"
     read -p "Press enter to remove..."
     sudo apt-get purge -y -- "${to_remove[@]}"

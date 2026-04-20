@@ -1,6 +1,8 @@
 #!/bin/bash
-set -euo pipefail
 
-[[  "$#" -gt 0 ]] || catch -e "No command provided to run"
+if (( "${#}" = 0 )); then
+    echo "No command provided to run"
+    exit 1
+fi
 
 nohup "${@}" &> /dev/null &

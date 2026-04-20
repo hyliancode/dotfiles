@@ -1,14 +1,18 @@
 #!/bin/bash
-set -euo pipefail
 
 check_command() {
-    for cmd in "${@}"; do
-        if ! command -v "${cmd}" 1>/dev/null; then
-            catch -i "Command '${cmd}' not found"
-            status=1
-        fi
+    if [[ "${#}" = 0 ]]; then
+        echo "No command provided to check"
+        return 1
+    fi
+    for command in "${@}"; do
+        ! command -v "${command}" 1>/dev/null && commands_not_found+=("${command}")
     done
-    return "${status:-0}"
+    if (( "${#commands_not_found[@]}" > 0 )); then
+        echo "These required commands were not found:"
+        printf "\e[31m%s\e[0m\n" "${commands_not_found[@]}"
+    fi
+    return "${#commands_not_found[@]}"
 }
 
 check_command "${@}"

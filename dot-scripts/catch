@@ -2,26 +2,26 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: ${0##*/} <-e|-i> <message>"
+    echo "Usage: ${0##*/} <-e|-i> [message]"
     echo "  -e: Print error message to stderr and return with exit code 1"
     echo "  -i: Print info message to stderr and return with exit code 0"
     return 1
 }
 
 error() {
-    [[ -n "${1:-}" ]] && echo "${1}" 1>&2
+    [[ -n "${2:-}" ]] && echo "${1}" 1>&2
     return 1
 }
 
 info() {
-    [[ -n "${1:-}" ]] && echo "${1}" 1>&2
+    [[ -n "${2:-}" ]] && echo "${1}" 1>&2
     return 0
 }
 
-[[ -z "${1:-}" || -z "${2:-}" ]] && usage
+[[ -z "${1:-}" ]] && usage
 
 case "${1:-}" in
-    -e ) error "${2}" ;;
-    -i ) info "${2}" ;;
+    -e ) error "${2:-}" ;;
+    -i ) info "${2:-}" ;;
     * ) usage ;;
 esac

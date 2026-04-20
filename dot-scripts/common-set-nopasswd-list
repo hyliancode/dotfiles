@@ -1,0 +1,33 @@
+#!/bin/bash
+set -euo pipefail
+
+nopasswd_bin_paths=(
+	"/bin/chvt"
+)
+
+for nopasswd_bin_path in "${nopasswd_bin_paths[@]}"; do
+	nopasswd_bin_name="${nopasswd_bin_path##*/}"
+	nopasswd_bin_which_path="$(which "${nopasswd_bin_name}")"
+
+	if [[ -z "${nopasswd_bin_which_path}" ]]; then
+		catch -i "Binary '${nopasswd_bin_path}' not found. Skipping."
+		continue
+	fi
+
+	if [[ -f /etc/sudoers.d/"${nopasswd_bin_name}" ]]; then
+		catch -i "File already exists '/etc/sudoers.d/${nopasswd_bin_name}'. Skipping."
+		continue
+	fi
+
+	if [[ "${nopasswd_bin_path}" == "${nopasswd_bin_which_path}" ]]; then
+		echo "${USER} ALL=(ALL) NOPASSWD: ${nopasswd_bin_path}" | sudo tee /etc/sudoers.d/"${nopasswd_bin_name}"
+		if [[ -f /etc/sudoers.d/"${nopasswd_bin_name}" ]]; then
+			sudo chmod 440 /etc/sudoers.d/"${nopasswd_bin_name}"
+		else
+			catch -e "Failed to create '/etc/sudoers.d/${nopasswd_bin_name}'. Please check permissions and try again."
+		fi
+	else
+		catch -i "Paths do not match. User entered '${nopasswd_bin_path}' and 'which' returned '${nopasswd_bin_which_path}'. Skipping."
+		continue
+	fi
+done

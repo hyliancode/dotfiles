@@ -1,24 +1,26 @@
 #!/bin/bash
-set -euo pipefail
+
+usage() {
+    echo "Usage: ${0##*/} [-term|-rofi|-hypr] [prompt]"
+    exit 1
+}
 
 confirm() {
-    local launcher prompt usage rofi_args
+    local launcher prompt fzf_args rofi_args hypr_args
     launcher="${1}"
+    [[ -n "${launcher}" ]] || usage
     prompt="${2}"
-    usage="Usage: ${0##*/} <-term|-rofi|-hypr> <prompt>"
+    [[ -n "${prompt}" ]] || usage
     fzf_args=(--prompt="${prompt} (v -_-)> ")
     rofi_args=(-dmenu -p "${prompt} (v -_-)>")
     hypr_args=(-p "${prompt} (v -_-)>")
-
-    [[ -z "${launcher}" ]] && catch -e "${usage}"
-    [[ -z "${prompt}" ]] && catch -e "${usage}"
 
     case "${launcher}" in
         -term ) [[ "$(printf "No\nYes" | fzf "${fzf_args[@]}")" == "Yes" ]] || return 1 ;;
         -rofi ) [[ "$(printf "No\nYes" | rofi "${rofi_args[@]}")" == "Yes" ]] || return 1 ;;
         -hypr ) [[ "$(printf "No\nYes" | hyprlauncher ${hypr_args[@]})" == "Yes" ]] || return 1 ;;
-        * ) catch -e "Unsupported launcher: ${launcher}" ;;
+        * ) usage ;;
     esac
 }
 
-confirm "${1:-}" "${2:-}"
+confirm "${1}" "${2}"

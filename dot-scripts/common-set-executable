@@ -1,12 +1,11 @@
 #!/bin/bash
-
-warning() { echo "[WARNING] ${1:Unknown warning}"; }
+set -euo pipefail
 
 for file in "${HOME}/.scripts"/*; do
     [[ -f "${file}" ]] || continue
     if head -n 1 "${file}" | grep -q '^#!/bin/bash$'; then
         [[ -x "${file}" ]] && continue
         echo "Making ${file} executable..."
-        chmod +x "${file}" || warning "Failed to make '${file}' executable."
+        chmod +x "${file}" || catch -i "Failed to make '${file}' executable."
     fi
 done
