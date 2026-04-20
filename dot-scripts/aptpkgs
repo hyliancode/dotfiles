@@ -30,7 +30,7 @@ _update() {
     sudo apt-get full-upgrade -y
 
     if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
-        confirm "Linux kernel has been updated. Reboot now?"
+        confirm "Linux kernel has been updated and needs rebooting. Do you want to reboot now?"
         mint-powermenu -n -r
     fi
 }
