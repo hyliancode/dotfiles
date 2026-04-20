@@ -4,7 +4,7 @@ set -euo pipefail
 check_command() {
     for cmd in "${@}"; do
         if ! command -v "${cmd}" 1>/dev/null; then
-            echo "Command '${cmd}' not found."
+            catch -i "Command '${cmd}' not found"
             status=1
         fi
     done

@@ -1,8 +1,0 @@
-#!/bin/bash
-
-if hyrule-util-check-aur; then
-	echo -e "\e[32mUpdate AUR packages\e[0m"
-	yay -Sua --noconfirm --cleanafter --ignore gcc14 --ignore gcc14-libs
-else
-	echo -e "\e[31mCannot update AUR packages\e[0m"
-fi

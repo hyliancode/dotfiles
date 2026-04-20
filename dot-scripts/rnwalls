@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+chkcmd convert openssl
+
 walls_dir="$HOME/dotfiles/dot-walls"
 walls=("${walls_dir}"/*.jpg "${walls_dir}"/*.jpeg "${walls_dir}"/*.png)
 [[ ${#walls[@]} -eq 0 ]] && catch -e "No files found in '${walls_dir}' directory."

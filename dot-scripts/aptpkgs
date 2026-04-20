@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-chkcmd fzf
+chkcmd apt-get fzf
 
 fzf_options=(
     -e

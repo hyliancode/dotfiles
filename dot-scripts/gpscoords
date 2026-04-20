@@ -1,18 +1,11 @@
 #!/bin/bash
+set -euo pipefail
 
-# Get latitude and longitude from 'ip-api.com' and save it to '~/.gps_coordinates'
-# This file can be used by other scripts to get the current location of the user
-# I just use it for redshift, wlsunset and gammastep launcher scripts
-
-source functions || exit 1
-
-for dependency in curl jq; do
-    command -v "${dependency}" 1> /dev/null || error "'${dependency}' is not installed."
-done
+chkcmd curl jq
 
 get_coordinates() {
     echo "Getting GPS coordinates..."
-    coords="$(curl --fail http://ip-api.com/json?fields=lat,lon || true)"
+    coords="$(curl --fail http://ip-api.com/json?fields=lat,lon || catch -i)"
     if [[ -n "${coords}" ]]; then
         latitude=$(echo "${coords}" | jq -r '.lat')
         longitude=$(echo "${coords}" | jq -r '.lon')

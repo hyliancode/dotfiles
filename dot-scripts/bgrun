@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+
+[[  "$#" -gt 0 ]] || catch -e "No command provided to run"
+
+nohup "${@}" &> /dev/null &

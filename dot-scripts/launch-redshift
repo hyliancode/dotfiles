@@ -1,0 +1,23 @@
+#!/bin/bash
+set -euo pipefail
+
+chkcmd redshift
+
+[[ -f "${HOME}/.gps_coordinates" ]] || catch -e "GPS coordinates file not found. Run 'gpscoords' to get the GPS coordinates first."
+
+{ IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
+[[ -z "${latitude}" || -z "${longitude}" ]] && catch -e "Failed to get GPS coordinates."
+
+redshift_args=(
+    -l "${latitude}:${longitude}"
+    -b 1.0:0.6
+    -t 6000:4000
+    -m randr
+)
+
+if pgrep -x redshift 1> /dev/null; then
+    echo "Redshift is already running. Restarting redshift with new GPS coordinates..."
+    killall -q -w redshift
+fi
+
+bgrun redshift "${redshift_args[@]}"
