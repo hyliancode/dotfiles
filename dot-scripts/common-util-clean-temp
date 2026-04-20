@@ -1,6 +1,0 @@
-#!/bin/bash
-
-error() { echo "[ERROR] ${1:Unknown error}"; exit 1; }
-command -v trash-put || error "trash-put command not found. Please install trash-cli package."
-trash-put -fv /tmp/* || error "Failed to clean /tmp directory."
-echo "Syncing..." && sync

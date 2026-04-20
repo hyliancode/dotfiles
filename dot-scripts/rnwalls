@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+
+walls_dir="$HOME/dotfiles/dot-walls"
+walls=("${walls_dir}"/*.jpg "${walls_dir}"/*.jpeg "${walls_dir}"/*.png)
+[[ ${#walls[@]} -eq 0 ]] && catch -e "No files found in '${walls_dir}' directory."
+
+for wall in "${walls[@]}"; do
+    random_hex=$(openssl rand -hex 4)
+    ext="${wall##*.}"
+    new_file_name="${walls_dir}/${random_hex,,}.jpg"
+    if [[ "${ext}" == "png" ]]; then
+        echo "${wall##*/} -> ${new_file_name}"
+        convert "${wall}" -quality 100 "${new_file_name}" || catch -e "Failed to convert ${wall} to JPEG format."
+        rm -f "${wall}" || catch -e "Failed to remove original file ${wall}."
+    fi
+    echo "${wall##*/} -> ${new_file_name}"
+    mv -n "${wall}" "${new_file_name}"
+done

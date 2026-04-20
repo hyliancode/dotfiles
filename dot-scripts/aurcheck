@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 pacman -Qem &>/dev/null && foreigns_found=yes || foreigns_found=no
 command -v yay &>/dev/null && yay_found=yes || yay_found=no
