@@ -1,0 +1,43 @@
+#!/bin/bash
+set -euo pipefail
+
+chkcmd fzf
+
+fzf_options=(
+    -e
+    --multi
+)
+
+_install() {
+    readarray -t to_install < <(apt-cache pkgnames | fzf "${fzf_options[@]}")
+    [[ -n "${to_install[*]}" ]] || catch -e
+    printf -- "Install: <%s>\n" "${to_install[@]}"
+    read -p "Press enter to install..."
+    sudo apt-get install -y -- "${to_install[@]}"
+}
+
+_remove() {
+    readarray -t to_remove < <(dpkg --get-selections | grep -v deinstall | awk '{print $1}' | fzf "${fzf_options[@]}")
+    [[ -n "${to_remove[*]}" ]] || catch -e
+    printf -- "Remove: <%s>\n" "${to_remove[@]}"
+    read -p "Press enter to remove..."
+    sudo apt-get purge -y -- "${to_remove[@]}"
+}
+
+_update() {
+    echo -e "\e[32mUpdate apt packages\e[0m"
+    sudo apt-get update
+    sudo apt-get upgrade -y
+
+    if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
+        confirm "Linux kernel has been updated. Reboot now?"
+        mint-powermenu -n -r
+    fi
+}
+
+case "${1:-}" in
+    install ) _install "${2:-}" ;;
+    remove ) _remove "${2:-}" ;;
+    update ) _update ;;
+    * ) catch -e "Usage: ${0##*/} {install|remove|update} [query]" ;;
+esac
