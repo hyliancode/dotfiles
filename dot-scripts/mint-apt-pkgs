@@ -2,9 +2,13 @@
 
 chkcmd apt-get fzf || exit 1
 
+_usage() {
+    echo "Usage: ${0##*/} {-i|-r|-u} [query]" >&2
+    exit 1
+}
+
 fzf_options=(
     --exact
-    --height 60%
     --border
     --multi
 )
@@ -14,7 +18,7 @@ _install() {
     [[ -n "${to_install[*]}" ]] || exit 0
     printf -- "Install: <%s>\n" "${to_install[@]}"
     read -p "Press enter to install..."
-    sudo apt-get install -y -- "${to_install[@]}"
+    sudo apt-get install -- "${to_install[@]}"
 }
 
 _remove() {
@@ -22,23 +26,24 @@ _remove() {
     [[ -n "${to_remove[*]}" ]] || exit 0
     printf -- "Remove: <%s>\n" "${to_remove[@]}"
     read -p "Press enter to remove..."
-    sudo apt-get purge -y -- "${to_remove[@]}"
+    sudo apt-get purge -- "${to_remove[@]}"
 }
 
 _update() {
     echo -e "\e[32mUpdate apt packages\e[0m"
     sudo apt-get update
-    sudo apt-get full-upgrade -y
+    sudo apt-get full-upgrade
 
     if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
-        confirm "Linux kernel has been updated and needs rebooting. Do you want to reboot now?"
-        mint-powermenu -n -r
+        echo "Linux kernel has been updated and needs to reboot"
+        read -p "Reboot now? [y/N] "
+        [[ "${REPLY}" =~ ^[Yy] ]] && mint-launch-powermenu -n -r
     fi
 }
 
 case "${1:-}" in
-    install ) _install "${2:-}" ;;
-    remove ) _remove "${2:-}" ;;
-    update ) _update ;;
-    * ) catch -e "Usage: ${0##*/} {install|remove|update} [query]" ;;
+    -i ) _install "${2:-}" ;;
+    -r ) _remove "${2:-}" ;;
+    -u ) _update ;;
+    * ) _usage ;;
 esac

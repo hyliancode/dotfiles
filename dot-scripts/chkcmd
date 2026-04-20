@@ -10,7 +10,7 @@ check_command() {
     done
     if (( "${#commands_not_found[@]}" > 0 )); then
         echo "These required commands were not found:"
-        printf "\e[31m%s\e[0m\n" "${commands_not_found[@]}"
+        printf "\e[31m> %s\e[0m\n" "${commands_not_found[@]}"
     fi
     return "${#commands_not_found[@]}"
 }
