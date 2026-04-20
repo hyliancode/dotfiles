@@ -3,3 +3,6 @@
 if [[ -f "${HOME}/.bashrc" ]]; then
     source "${HOME}/.bashrc"
 fi
+
+# Added by swiftly
+. "/home/bee/.local/share/swiftly/env.sh"
