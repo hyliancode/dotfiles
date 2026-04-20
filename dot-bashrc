@@ -15,7 +15,8 @@ export PATH="\
 /var/lib/flatpak/exports/bin:\
 ${HOME}/.local/bin:\
 ${HOME}/.local/share/flatpak/exports/bin:\
-${HOME}/.scripts"
+${HOME}/.scripts:\
+${HOME}/.scripts/utils"
 
 export BROWSER=brave-browser
 export EDITOR=edit
