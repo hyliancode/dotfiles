@@ -27,7 +27,7 @@ _remove() {
 _update() {
     echo -e "\e[32mUpdate apt packages\e[0m"
     sudo apt-get update
-    sudo apt-get upgrade -y
+    sudo apt-get full-upgrade -y
 
     if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
         confirm "Linux kernel has been updated. Reboot now?"
