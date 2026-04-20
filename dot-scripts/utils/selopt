@@ -17,13 +17,13 @@ select_option() {
     (( "${#options[@]}" <= 0 )) && catch -e "${usage}"
 
     case "${launcher}" in
-        -term ) selection="$(printf "%s\n" "${options[@]}" | fzf "${fzf_args[@]}" || catch -e "Failed to get selection from GUI prompt")" ;;
-        -rofi ) selection="$(printf "%s\n" "${options[@]}" | rofi "${rofi_args[@]}" || catch -e "Failed to get selection from GUI prompt")" ;;
-        -hypr ) selection="$(printf "%s\n" "${options[@]}" | hyprlauncher "${hypr_args[@]}" || catch -e "Failed to get selection from GUI prompt")" ;;
+        -term ) selection="$(printf "%s\n" "${options[@]}" | fzf "${fzf_args[@]}" || catch -i)" ;;
+        -rofi ) selection="$(printf "%s\n" "${options[@]}" | rofi "${rofi_args[@]}" || catch -i)" ;;
+        -hypr ) selection="$(printf "%s\n" "${options[@]}" | hyprlauncher "${hypr_args[@]}" || catch -i)" ;;
         * ) catch -e "Unsupported launcher: ${launcher}" ;;
     esac
 
-    echo "${selection}"
+    [[ -n "${selection}" ]] && echo "${selection}"
 }
 
 select_option "${1:-}" "${2:-}" "${@:3}"

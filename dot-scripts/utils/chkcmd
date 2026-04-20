@@ -1,10 +1,11 @@
 #!/bin/bash
+set -euo pipefail
 
 check_command() {
     for cmd in "${@}"; do
         if ! command -v "${cmd}" 1>/dev/null; then
-        catch -e "Command '${cmd}' not found. Install to proceed."
-        status=1
+            echo "Command '${cmd}' not found."
+            status=1
         fi
     done
     return "${status:-0}"

@@ -2,10 +2,10 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: ${0##*/} [-noconfirm] [OPTION]"
+    echo "Usage: ${0##*/} [-n] [OPTION]"
     echo
     echo "Options:"
-    echo "  -noconfirm Skip confirmation prompts"
+    echo "  -n Skip confirmation prompts"
     echo "  -s Suspend"
     echo "  -l Logout"
     echo "  -r Reboot"
@@ -17,17 +17,17 @@ usage() {
 }
 
 while getopts "nslrobtg" opt; do
-  case $opt in
-    n ) skip_confirm="1" ;;
-    s ) selected_option="Suspend" ;;
-    l ) selected_option="Logout" ;;
-    r ) selected_option="Reboot" ;;
-    o ) selected_option="Shutdown" ;;
-    b ) selected_option="Reboot into BIOS" ;;
-    t ) selected_option="Change bootmode: TTY" ;;
-    g ) selected_option="Change bootmode: Graphical" ;;
-    * ) usage ;;
-  esac
+    case "${opt}" in
+        n ) skip_confirm="1" ;;
+        s ) selected_option="Suspend" ;;
+        l ) selected_option="Logout" ;;
+        r ) selected_option="Reboot" ;;
+        o ) selected_option="Shutdown" ;;
+        b ) selected_option="Reboot into BIOS" ;;
+        t ) selected_option="Change bootmode: TTY" ;;
+        g ) selected_option="Change bootmode: Graphical" ;;
+        * ) usage ;;
+    esac
 done
 
 shift $((OPTIND - 1))
@@ -102,18 +102,16 @@ options=(
 )
 
 if [[ -z "${selected_option:-}" ]]; then
-    selected_option="$(selopt -rofi "Select an action:" "${options[@]}" || catch -i "No option selected")"
-else
-    selected_option="${selected_option}"
+    selected_option="$(selopt -rofi "Select an action:" "${options[@]}" || catch -i)"
 fi
 
 case "${selected_option}" in
-    "Suspend"|"-s") _suspend ;;
-    "Logout"|"-l") _logout ;;
-    "Reboot"|"-r") _reboot ;;
-    "Shutdown"|"-o") _shutdown ;;
-    "Reboot into BIOS"|"-b") _reboot_bios ;;
-    "Change bootmode: TTY"|"-t") _bootmode_tty ;;
-    "Change bootmode: Graphical"|"-g") _bootmode_graphical ;;
-    *) usage ;;
+    "Suspend"|"-s" ) _suspend ;;
+    "Logout"|"-l" ) _logout ;;
+    "Reboot"|"-r" ) _reboot ;;
+    "Shutdown"|"-o" ) _shutdown ;;
+    "Reboot into BIOS"|"-b" ) _reboot_bios ;;
+    "Change bootmode: TTY"|"-t" ) _bootmode_tty ;;
+    "Change bootmode: Graphical"|"-g" ) _bootmode_graphical ;;
+    * ) usage ;;
 esac
