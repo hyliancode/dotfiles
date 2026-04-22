@@ -1,23 +1,21 @@
 #!/bin/bash
-set -euo pipefail
 
+chkcmd yt-dlp || exit 1
 
 if [[ "${1:-}" == "a" ]]; then
-    is_audio=1
+    is_audio=0
     shift # remove the first option from argument list
 elif [[ "${1:-}" == "720" || "${1:-}" == "1080" ]]; then
-    is_audio=0
+    is_audio=1
     resolution="${1:-1080}"
     shift  # remove the first option from argument list
 fi
-
 
 urls=("${@}")
 if [[ -z "${urls[*]}" ]]; then
     echo "usage: ${0} [1080 (default)|720|a] [url]|[url2 url3 etc]"
     exit 1
 fi
-
 
 ytdlp_options=(
     -N8
@@ -27,19 +25,14 @@ ytdlp_options=(
     -o "${HOME}/Videos/%(uploader|Unknown)s - %(upload_date>%m%d)s - %(title)s.%(ext)s"
 )
 
-
 ytdlp_audio_options=(
     -N8
     -x
     -o "${HOME}/Music/unprocessed-files/%(uploader|Unknown)s - %(title)s.%(ext)s"
 )
 
-
-if [[ "${is_audio:-0}" == "1" ]]; then
+if (( "${is_audio:-1}" )); then
     yt-dlp "${ytdlp_audio_options[@]}" "${urls[@]}"
 else
     yt-dlp "${ytdlp_options[@]}" "${urls[@]}"
 fi
-
-
-####

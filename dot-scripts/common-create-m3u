@@ -1,7 +1,9 @@
 #!/bin/bash
 
+catch() { echo "${1}"; exit 1; }
+
 folder="$(realpath "${1}")"
-[[ -d "${folder}" ]] || catch -e "Invalid folder path"
+[[ -d "${folder}" ]] || catch "Invalid folder path"
 m3u_name="${folder##*/}"
 
 file_types=(
@@ -13,7 +15,7 @@ file_types=(
     -name "*.webm"
 )
 
-readarray -t files < <(find "${folder}" -type f \( "${file_types[@]}" \) -exec realpath {} \; | sort -V)
-[[ -z "${files[*]}" ]] && catch -e "No media files found in the specified folder"
+readarray -t files < <(find "${folder}" -type f \( "${file_types[@]}" \) -exec realpath {} \; | sort -V || true)
+[[ -z "${files[*]}" ]] && catch "No media files found in the specified folder"
 
 printf "%s\n" "${files[@]}" > "${m3u_name}.m3u"

@@ -1,32 +1,28 @@
 #!/bin/bash
 
-source "${HOME}/.scripts/common-util-helper-functions" || exit 1
+chkcmd jq selopt || exit 1
 
-check_command "jq"
+catch() { echo "${1}"; exit 1; }
 
-[[ -f "${HOME}/.color_schemes.json" ]] || error "Color schemes file not found at ${HOME}/.color_schemes.json"
-readarray -t options < <(jq -r 'del(.comment) | keys[]' "${HOME}/.color_schemes.json" || warning "Failed to read color schemes")
+[[ -f "${HOME}/.color_schemes.json" ]] || catch "Color schemes file not found at ${HOME}/.color_schemes.json"
+readarray -t options < <(jq -r 'del(.comment) | keys[]' "${HOME}/.color_schemes.json" || true)
+[[ ${#options[@]} -eq 0 ]] && catch "No color schemes found in ${HOME}/.color_schemes.json"
 options+=("quit")
 
-scheme="$(select_option -rofi "Select a color scheme: " "${options[@]}" || warning "Failed to get color scheme selection")"
-[[ -z "${scheme}" ]] && error "No color scheme selected. Exiting."
+scheme="$(selopt -rofi "Select a color scheme: " "${options[@]}" || true)"
+[[ -z "${scheme}" ]] && catch "No color scheme selected. Exiting."
 [[ "${scheme}" == "quit" ]] && echo "Exiting without changes." && exit 0
 
-readarray -t colors < <(jq -r ".\"${scheme}\"[]" "${HOME}/.color_schemes.json" || warning "Failed to read color scheme '${scheme}'")
-[[ ${#colors[@]} -eq 0 ]] && error "No colors found for scheme '${scheme}'"
-[[ ${#colors[@]} -ne 16 ]] && error "Expected 16 colors for scheme '${scheme}', found ${#colors[@]}"
+readarray -t colors < <(jq -r ".\"${scheme}\"[]" "${HOME}/.color_schemes.json" || true)
+[[ ${#colors[@]} -eq 0 ]] && catch "No colors found for scheme '${scheme}'"
+[[ ${#colors[@]} -ne 16 ]] && catch "Expected 16 colors for scheme '${scheme}', found ${#colors[@]}"
 
 for i in "${!colors[@]}"; do
     printf "\e]4;%d;%s\a" "${i}" "${colors[$i]}"
 done
 
-# Foreground (Color 7 - White/Alt-White)
-printf "\e]10;%s\a" "${colors[7]}"
-# Background (Color 0 - Black/Alt-Black)
-printf "\e]11;%s\a" "${colors[8]}"
-# Cursor (Color 7 - White/Alt-White)
-printf "\e]12;%s\a" "${colors[7]}"
+printf "\e]10;%s\a" "${colors[7]}" # Foreground
+printf "\e]11;%s\a" "${colors[8]}" # Background
+printf "\e]12;%s\a" "${colors[7]}" # Cursor
 
-echo "Terminal colors set to ${scheme}."
-
-{ check_command "neofetch" && neofetch; } || { check_command "fastfetch" && fastfetch; }
+{ chkcmd "neofetch" && neofetch; } || { chkcmd "fastfetch" && fastfetch; }

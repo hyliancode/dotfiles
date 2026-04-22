@@ -6,26 +6,29 @@ binary_paths=(
 	"/usr/bin/flatpak"
 )
 
+catch() { echo "${1}"; exit 1; }
+catch_continue() { echo "${1}"; continue; }
+
 for bin_path in "${binary_paths[@]}"; do
 	bin_name="${bin_path##*/}"
 
 	if [[ ! -f "${bin_path}" ]]; then
-		echo "Binary '${bin_path}' not found" && continue
+		catch_continue "Binary '${bin_path}' not found"
 	fi
 
 	if [[ ! -x "${bin_path}" ]]; then
-		echo "Binary '${bin_path}' not executable" && continue
+		catch_continue "Binary '${bin_path}' not executable"
 	fi
 
 	if [[ -f /etc/sudoers.d/"${bin_name}" ]]; then
-		echo "File already exists '/etc/sudoers.d/${bin_name}'" && continue
+		catch_continue "File already exists '/etc/sudoers.d/${bin_name}'"
 	fi
 
 	echo "${USER} ALL=(ALL) NOPASSWD: ${bin_path}" |\
-		sudo tee /etc/sudoers.d/"${bin_name}"
+		sudo tee /etc/sudoers.d/"${bin_name}" || catch "Failed to write to '/etc/sudoers.d/${bin_name}'"
 	if [[ -f /etc/sudoers.d/"${bin_name}" ]]; then
-		sudo chmod 440 /etc/sudoers.d/"${bin_name}"
+		sudo chmod 440 /etc/sudoers.d/"${bin_name}" || catch "Failed to set permissions for '/etc/sudoers.d/${bin_name}'"
 	else
-		echo "Failed to create '/etc/sudoers.d/${bin_name}'" && continue
+		catch_continue "Failed to create '/etc/sudoers.d/${bin_name}'"
 	fi
 done

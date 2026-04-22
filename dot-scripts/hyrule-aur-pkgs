@@ -1,7 +1,8 @@
 #!/bin/bash
-set -euo pipefail
 
-chkcmd pacman yay
+chkcmd pacman yay || exit 1
 
-ping -qn -c 1 aur.archlinux.org &> /dev/null || catch -e "Cannot ping AUR"
-yay -Sua --noconfirm --cleanafter --ignore gcc14 --ignore gcc14-libs || catch -e "Failed to update AUR packages"
+catch() { echo "${1}"; exit 1; }
+
+ping -qn -c 1 aur.archlinux.org &> /dev/null || catch "Cannot ping AUR"
+yay -Sua --noconfirm --cleanafter --ignore gcc14 --ignore gcc14-libs || catch "Failed to update AUR packages"

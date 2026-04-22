@@ -1,11 +1,12 @@
 #!/bin/bash
-set -euo pipefail
+
+catch() { echo "${1}"; exit 1; }
 
 for file in "${HOME}/.scripts"/*; do
     [[ -f "${file}" ]] || continue
     if head -n 1 "${file}" | grep -q '^#!/bin/bash$'; then
         [[ -x "${file}" ]] && continue
         echo "Making ${file} executable..."
-        chmod +x "${file}" || catch -i "Failed to make '${file}' executable."
+        chmod +x "${file}" || catch "Failed to make '${file}' executable."
     fi
 done

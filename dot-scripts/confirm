@@ -1,5 +1,7 @@
 #!/bin/bash
 
+chkcmd fzf rofi hyprlauncher || exit 1
+
 usage() {
     echo "Usage: ${0##*/} [-term|-rofi|-hypr] [prompt]"
     exit 1

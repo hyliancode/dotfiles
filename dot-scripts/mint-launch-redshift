@@ -15,9 +15,5 @@ redshift_args=(
     -m randr
 )
 
-if pgrep -x redshift 1> /dev/null; then
-    echo "Redshift is already running. Restarting redshift with new GPS coordinates..."
-    killall -q -w redshift
-fi
-
+pgrep -x redshift 1> /dev/null && killall -q -w redshift
 bgrun redshift "${redshift_args[@]}"

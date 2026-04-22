@@ -1,13 +1,10 @@
 #!/bin/bash
 
-error() { echo "${1}"; exit 1; }
+catch() { echo "${1}"; exit 1; }
 
-pgrep -x gammastep && killall -q -w gammastep
-
-[[ -f "${HOME}/.gps_coordinates" ]] || error "GPS coordinates file not found. Run 'gpscoords' to get the GPS coordinates first."
-
+[[ -f "${HOME}/.gps_coordinates" ]] || catch "GPS coordinates file not found. Run 'common-get-gpscoords' to get the GPS coordinates first."
 { IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
-[[ -z "${latitude}" || -z "${longitude}" ]] && error "Failed to get GPS coordinates."
+[[ -z "${latitude}" || -z "${longitude}" ]] && catch "Failed to get GPS coordinates."
 
 gammastep_args=(
     -l "${latitude}:${longitude}"
@@ -16,4 +13,5 @@ gammastep_args=(
     -m randr
 )
 
+pgrep -x gammastep && killall -q -w gammastep
 gammastep "${gammastep_args[@]}" &
