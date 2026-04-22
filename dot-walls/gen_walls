@@ -1,33 +1,46 @@
 #!/bin/bash
 
-chkcmd lutgen || exit 1
+catch() { echo -e "\e[31m${1}\e[0m"; exit 1; }
 
-catch() {echo -e "\e[31m${1}\e[0m"; exit 1; }
-catch_continue() {echo -e "\e[33m${1}\e[0m"; continue; }
+command -v lutgen &>/dev/null || catch "Install 'lutgen'"
 
-original_walls_dir="${HOME}/dotfiles/dot-walls/original"
+walls_dir="${HOME}/dotfiles/dot-walls"
+[[ -d "${walls_dir}" ]] || catch "Walls directory does not exist."
+
+original_walls_dir="${walls_dir}/original"
 [[ -d "${original_walls_dir}" ]] || catch "Original walls directory does not exist."
 
 _lutgen_wall() {
-    local scheme scheme_dir wall
+    local scheme scheme_dir wall wall_no_path wall_no_ext output_name
     scheme="${1}"
-    scheme_dir="${original_walls_dir}/${scheme}"
+    scheme_dir="${walls_dir}/${scheme}"
+    shopt -s nullglob nocaseglob
+    original_walls=("${original_walls_dir%/}/"*.jpg)
+    shopt -u nullglob nocaseglob
+    lutgen_args=(
+        "-R"
+        "-P"
+        "-L"
+        "1.2"
+        "--level"
+        "16"
+    )
+
     [[ -n "${scheme}" ]] || catch "Usage: ${FUNCNAME} [scheme]"
-    [[ -d "${scheme_dir}" ]] || mkdir -p "${scheme_dir}" || catch "Failed to create directory for scheme '${scheme}'."
-    
-    shopt -s nullglob
-    original_walls=("${original_walls_dir}"/*)
-    shopt -u nullglob
+    mkdir -p "${scheme_dir}" || catch "Failed to create directory '${scheme_dir}'."
     [[ ${#original_walls[@]} -eq 0 ]] && catch "No files found in '${original_walls_dir}' directory."
     
-    for wall in "${original_walls_dir}"/*; do
-        if [[ ! -e "${scheme_dir}/${wall##*/}" ]]; then
-            echo -e "\e[32mGenerating wall for scheme '${scheme}' from ${wall}...\e[0m"
-            output_name="${scheme_dir}/${wall##*/}-${scheme}.jpg"
-            lutgen apply --preserve -p "${scheme}" "${wall}" "${output_name}" ||\
+    for wall in "${original_walls[@]}"; do
+        wall_no_path="${wall##*/}"
+        wall_no_ext="${wall_no_path%.*}"
+        output_name="${scheme_dir}/${wall_no_ext}-${scheme}.png"
+        if [[ ! -e "${output_name}" ]]; then
+            echo -e "\e[32mGenerating wall for scheme '${scheme}' from ${wall}\e[0m"
+            lutgen apply "${lutgen_args[@]}" -p "${scheme}" "${wall}" --output="${output_name}" 1>/dev/null ||\
                 catch "Failed to generate wall for scheme '${scheme}' from ${wall}."
         else
-            catch_continue "Wall '${wall##*/}' already exists in '${scheme}' directory."
+            echo -e "\e[33mWall '${wall_no_path}' already exists in '${scheme}' directory.\e[0m"
+            continue
         fi
     done
 }
