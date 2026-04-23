@@ -33,21 +33,15 @@ _lutgen_wall() {
         wall_no_ext="${wall_no_path%.*}"
         output_name="${scheme_dir}/${wall_no_ext}-${scheme}.png"
         lutgen_args=(
-            "-R"
-            "-P"
-            "-L"
-            "1.2"
-            "--level"
-            "16"
-            "-p"
-            "${scheme}"
-            "${wall}"
-            "--output"
-            "${output_name}"
+            apply
+            --palette "${scheme}"
+            --lum 0.5
+            --preserve "${wall}"
+            --output "${output_name}"
         )
         if [[ ! -e "${output_name}" ]]; then
             echo -e "\e[32mGenerating wall for scheme '${scheme}' from ${wall}\e[0m"
-            lutgen apply "${lutgen_args[@]}" 1>/dev/null \
+            lutgen "${lutgen_args[@]}" 1>/dev/null \
             || catch "Failed to generate wall for scheme '${scheme}' from ${wall}."
         else
             echo -e "\e[33mWall '${wall_no_path}' already exists in '${scheme}' directory.\e[0m"
@@ -57,9 +51,7 @@ _lutgen_wall() {
 }
 
 schemes=(
-    catppuccin-mocha
     nord
-    gruvbox-dark
 )
 
 for scheme in "${schemes[@]}"; do
