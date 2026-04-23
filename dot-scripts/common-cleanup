@@ -7,8 +7,42 @@ for cmd in trash-put trash-empty; do
     || catch "Command not found: '${cmd}'"
 done
 
-sudo trash-put -f /tmp/* || catch "[ROOT] Failed to clean /tmp directory."
-trash-put -f /tmp/* || catch "[USER] Failed to clean /tmp directory."
-sudo trash-empty -f || catch "[ROOT] Failed to empty trash."
-trash-empty -f || catch "[USER] Failed to empty trash."
-echo "Syncing..." && sync
+_common_cleanup() {
+    echo "Cleaning '/tmp'"
+    sudo trash-put -f /tmp/* 1>/dev/null \
+    || catch "[ROOT] Failed to clean /tmp directory."
+    trash-put -f /tmp/* 1>/dev/null \
+    || catch "[USER] Failed to clean /tmp directory."
+    
+    echo "Cleaning trash"
+    sudo trash-empty -f 1>/dev/null \
+    || catch "[ROOT] Failed to empty trash."
+    trash-empty -f 1>/dev/null \
+    || catch "[USER] Failed to empty trash."
+    echo "Syncing..." && sync
+}
+
+_debian_cleanup() {
+    _common_cleanup
+
+    # old kernel versions
+    sudo apt-get purge $(dpkg -l \
+    | awk '/^ii  linux-image-[0-9]/ {print $2}' \
+    | grep -v "$(uname -r | cut -d- -f1,2)")
+}
+
+_arch_cleanup() {
+    _common_cleanup
+
+    # old kernel versions
+    sudo pacman -Rs $(pacman -Qq \
+    | grep -E '^linux(-lts|-zen|-hardened)?$' \
+    | grep -v "$(uname -r | cut -d- -f1)")
+
+}
+
+case "$(grep -si ^"ID_LIKE=" /etc/os-release)" in
+    *debian* ) _debian_cleanup ;;
+    *arch* ) _arch_cleanup ;;
+    * ) echo "Unsupported distribution" ;;
+esac
