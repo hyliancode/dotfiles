@@ -15,7 +15,6 @@ done
 paths_to_remove=(
 	"${HOME}/.bash_profile"
 	"${HOME}/.bashrc"
-	"${HOME}/.color_schemes.json"
 	"${HOME}/.config/bspwm"
 	"${HOME}/.config/easyeffects"
 	"${HOME}/.config/hypr"
