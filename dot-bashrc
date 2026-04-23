@@ -22,13 +22,30 @@ alias ll='ls -la --color=auto'
 
 export BROWSER=brave-browser
 export EDITOR=edit
-export PAGER="less -F -g -i -M -R -S -w -z-6 -X"
+export PAGER="less -R -X"
 export SUDO_EDITOR=edit
 export SYSTEMD_EDITOR=edit
 export VISUAL=code
 export HISTCONTROL=ignoreboth
 export HISTFILESIZE=2000
 export HISTSIZE=1000
+
+# for 'less' and 'man' colors
+export GROFF_NO_SGR=1
+export LESS_TERMCAP_mb=$'\e[1;31m'
+export LESS_TERMCAP_md=$'\e[1;31m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_mh=$'\e[2m'
+export LESS_TERMCAP_mr=$'\e[7m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[1;33;44m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[4;1;32m'
+export LESS_TERMCAP_ZN=$'\e[74m'
+export LESS_TERMCAP_ZO=$'\e[73m'
+export LESS_TERMCAP_ZV=$'\e[75m'
+export LESS_TERMCAP_ZW=$'\e[75m'
+
 export PS1="\[\e[32m\] \w\[\e[0m\] > "
 
 force_color_prompt=yes
