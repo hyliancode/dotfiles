@@ -1,8 +1,11 @@
 #!/bin/bash
 
-chkcmd curl jq || exit 1
-
 catch() { echo "${1}"; exit 1; }
+
+for cmd in curl jq; do
+    command -v "${cmd}" 1>/dev/null \
+    || catch "Command not found: '${cmd}'"
+done
 
 get_coordinates() {
     echo "Getting GPS coordinates..."

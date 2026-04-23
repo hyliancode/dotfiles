@@ -1,8 +1,0 @@
-#!/bin/bash
-
-chkcmd pacman yay || exit 1
-
-catch() { echo "${1}"; exit 1; }
-
-ping -qn -c 1 aur.archlinux.org &> /dev/null || catch "Cannot ping AUR"
-yay -Sua --noconfirm --cleanafter --ignore gcc14 --ignore gcc14-libs || catch "Failed to update AUR packages"

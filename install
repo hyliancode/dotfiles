@@ -1,14 +1,17 @@
 #!/bin/bash
 
-error() { echo "[ERROR] ${1:-Unknown error}"; exit 1; }
+catch() { echo "${1}"; exit 1; }
 
-[[ "${PWD}" == "${HOME}/dotfiles" ]] || error "Run this script from '${HOME}/dotfiles'"
+[[ "${PWD}" == "${HOME}/dotfiles" ]] \
+|| catch "Run this script from '${HOME}/dotfiles'"
 
-for dependency in trash-put stow; do
-	command -v "${dependency}" &>/dev/null || error "Install ${dependency} before running script"
+for cmd in trash-put stow; do
+	command -v "${cmd}" 1>/dev/null \
+	|| catch "Command not found: '${cmd}'"
 done
 
-# these need to be manually added - needed so the script can make-way for 'stow' command
+# these need to be manually added
+# needed so the script can make-way for 'stow' command
 paths_to_remove=(
 	"${HOME}/.bash_profile"
 	"${HOME}/.bashrc"
@@ -29,11 +32,11 @@ paths_to_remove=(
 )
 
 for path_to_remove in "${paths_to_remove[@]}"; do
-	if [[ -f "${path_to_remove}" || -d "${path_to_remove}" || -L "${path_to_remove}" ]]; then
+	if [[ -e "${path_to_remove}" || -L "${path_to_remove}" ]]; then
 		echo "Moving '${path_to_remove}' to trash"
-		trash-put -f "${path_to_remove}" || error "Failed to move '${path_to_remove}' to trash"
+		trash-put -f "${path_to_remove}" \
+		|| catch "Failed to move '${path_to_remove}' to trash"
 	else
-		echo "No existing '${path_to_remove}' found, skipping"
 		continue
 	fi
 done

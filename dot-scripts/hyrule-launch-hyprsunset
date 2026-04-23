@@ -1,12 +1,20 @@
 #!/bin/bash
 
-error() { echo "[ERROR] ${1}"; exit 1; }
+catch() { echo "${1}"; exit 1; }
 
-pgrep -x hyprsunset && killall -q -w hyprsunset
+command -v hyprsunset 1>/dev/null \
+|| catch "Command not found: 'hyprsunset'"
 
-[[ -f "${HOME}/.gps_coordinates" ]] || error "GPS coordinates file not found. Run 'common-util-gpscoords' first."
+[[ -f "${HOME}/.gps_coordinates" ]] \
+|| catch "GPS coordinates file not found. Run 'common-get-gpscoords'."
 
 { IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
-[[ -z "${latitude}" || -z "${longitude}" ]] && error "Failed to get GPS coordinates."
+[[ -n "${latitude}" && -n "${longitude}" ]] \
+|| catch "Failed to get GPS coordinates."
 
-# will be replacing wlsunset with hyprsunset to try
+hyprsunset_args=(
+    -l "${latitude}:${longitude}"
+)
+
+pgrep -x hyprsunset && killall -q -w hyprsunset
+nohup hyprsunset "${hyprsunset_args[@]}" & disown

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 case $- in
-    *i*) ;;
-      *) return;;
+    *i* ) ;;
+      * ) return ;;
 esac
 
 export PATH="\
@@ -15,18 +15,24 @@ export PATH="\
 /var/lib/flatpak/exports/bin:\
 ${HOME}/.local/bin:\
 ${HOME}/.local/share/flatpak/exports/bin:\
-${HOME}/.scripts:"
+${HOME}/.scripts"
+
+alias ls='ls --color=auto'
+alias ll='ls -la --color=auto'
 
 export BROWSER=brave-browser
 export EDITOR=edit
+export PAGER="less -F -g -i -M -R -S -w -z-6 -X"
 export SUDO_EDITOR=edit
+export SYSTEMD_EDITOR=edit
+export VISUAL=code
 export HISTCONTROL=ignoreboth
 export HISTFILESIZE=2000
 export HISTSIZE=1000
-export LESS="-F -g -i -M -R -S -w -z-6 -X"
-export PAGER=less
 export PS1="\[\e[32m\] \w\[\e[0m\] > "
+
 force_color_prompt=yes
+
 shopt -s checkwinsize
 shopt -s histappend
 

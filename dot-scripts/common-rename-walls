@@ -1,23 +1,31 @@
 #!/bin/bash
 
-chkcmd convert openssl || exit 1
-
 catch() { echo "${1}"; exit 1; }
+
+for cmd in convert openssl; do
+    command -v "${cmd}" 1>/dev/null \
+    || catch "Command not found: '${cmd}'"
+done
 
 walls_dir="${HOME}/dotfiles/dot-walls"
 walls=("${walls_dir}"/*.jpg "${walls_dir}"/*.jpeg "${walls_dir}"/*.png)
-[[ ${#walls[@]} -eq 0 ]] && catch "No files found in '${walls_dir}' directory."
+(( ${#walls[@]} > 0 )) \
+|| catch "No files found in '${walls_dir}' directory."
 
 for wall in "${walls[@]}"; do
     random_hex=$(openssl rand -hex 4 || true)
-    [[ -n "${random_hex}" ]] || catch "Failed to generate random hex string for ${wall}."
+    [[ -n "${random_hex}" ]] \
+    || catch "Failed to generate random hex string for ${wall}."
     ext="${wall##*.}"
     new_file_name="${walls_dir}/${random_hex,,}.jpg"
     if [[ "${ext}" == "png" ]]; then
         echo "${wall##*/} -> ${new_file_name}"
-        convert "${wall}" -quality 100 "${new_file_name}" || catch "Failed to convert ${wall} to JPEG format."
-        rm -f "${wall}" || catch "Failed to remove original file ${wall}."
+        convert "${wall}" -quality 100 "${new_file_name}" \
+        || catch "Failed to convert ${wall} to JPEG format."
+        rm -f "${wall}" \
+        || catch "Failed to remove original file ${wall}."
     fi
     echo "${wall##*/} -> ${new_file_name}"
-    mv -n "${wall}" "${new_file_name}" || catch "Failed to rename ${wall} to ${new_file_name}."
+    mv -n "${wall}" "${new_file_name}" \
+    || catch "Failed to rename ${wall} to ${new_file_name}."
 done

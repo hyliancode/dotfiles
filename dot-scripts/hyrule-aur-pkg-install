@@ -1,0 +1,14 @@
+#!/bin/bash
+
+catch() { echo "${1}"; exit 1; }
+
+for cmd in pacman yay; do
+    command -v "${cmd}" 1>/dev/null \
+    || catch "Command not found: '${cmd}'"
+done
+
+ping -qn -c 1 aur.archlinux.org &> /dev/null \
+|| catch "Cannot ping AUR"
+
+yay -Sua --noconfirm --cleanafter --ignore gcc14 --ignore gcc14-libs \
+|| catch "Failed to update AUR packages"

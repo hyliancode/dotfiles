@@ -1,12 +1,14 @@
 #!/bin/bash
 
-chkcmd trash-put trash-empty || exit 1
-
 catch() { echo "${1}"; exit 1; }
 
-sudo trash-put -fv /tmp/* || catch "ROOT: Failed to clean /tmp directory."
-trash-put -fv /tmp/* || catch "USER: Failed to clean /tmp directory."
-sudo trash-empty -fv || catch "ROOT: Failed to empty trash."
-trash-empty -fv || catch "USER: Failed to empty trash."
-echo "Syncing..."
-sync
+for cmd in trash-put trash-empty; do
+    command -v "${cmd}" 1>/dev/null \
+    || catch "Command not found: '${cmd}'"
+done
+
+sudo trash-put -f /tmp/* || catch "[ROOT] Failed to clean /tmp directory."
+trash-put -f /tmp/* || catch "[USER] Failed to clean /tmp directory."
+sudo trash-empty -f || catch "[ROOT] Failed to empty trash."
+trash-empty -f || catch "[USER] Failed to empty trash."
+echo "Syncing..." && sync

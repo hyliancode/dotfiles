@@ -7,28 +7,35 @@ binary_paths=(
 )
 
 catch() { echo "${1}"; exit 1; }
-catch_continue() { echo "${1}"; continue; }
+catch_warn() { echo "${1}"; }
 
 for bin_path in "${binary_paths[@]}"; do
 	bin_name="${bin_path##*/}"
 
 	if [[ ! -f "${bin_path}" ]]; then
-		catch_continue "Binary '${bin_path}' not found"
+		catch_warn "Binary '${bin_path}' not found"
+		continue
 	fi
 
 	if [[ ! -x "${bin_path}" ]]; then
-		catch_continue "Binary '${bin_path}' not executable"
+		catch_warn "Binary '${bin_path}' not executable"
+		continue
 	fi
 
 	if [[ -f /etc/sudoers.d/"${bin_name}" ]]; then
-		catch_continue "File already exists '/etc/sudoers.d/${bin_name}'"
+		catch_warn "File already exists '/etc/sudoers.d/${bin_name}'"
+		continue
 	fi
 
 	echo "${USER} ALL=(ALL) NOPASSWD: ${bin_path}" |\
-		sudo tee /etc/sudoers.d/"${bin_name}" || catch "Failed to write to '/etc/sudoers.d/${bin_name}'"
+		sudo tee /etc/sudoers.d/"${bin_name}" \
+		|| catch "Failed to write to '/etc/sudoers.d/${bin_name}'"
+	
 	if [[ -f /etc/sudoers.d/"${bin_name}" ]]; then
-		sudo chmod 440 /etc/sudoers.d/"${bin_name}" || catch "Failed to set permissions for '/etc/sudoers.d/${bin_name}'"
+		sudo chmod 440 /etc/sudoers.d/"${bin_name}" \
+		|| catch "Failed to set permissions for '/etc/sudoers.d/${bin_name}'"
 	else
-		catch_continue "Failed to create '/etc/sudoers.d/${bin_name}'"
+		catch_warn "Failed to create '/etc/sudoers.d/${bin_name}'"
+		continue
 	fi
 done

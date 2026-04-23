@@ -1,12 +1,16 @@
 #!/bin/bash
-set -euo pipefail
 
-chkcmd redshift
+catch() { echo "${1}"; exit 1; }
 
-[[ -f "${HOME}/.gps_coordinates" ]] || catch -e "GPS coordinates file not found. Run 'gpscoords' to get the GPS coordinates first."
+command -v redshift 1>/dev/null \
+|| catch "Command not found: 'redshift'"
+
+[[ -f "${HOME}/.gps_coordinates" ]] \
+|| catch "GPS coordinates file not found. Run 'gpscoords'."
 
 { IFS= read -r latitude; IFS= read -r longitude; } < "${HOME}/.gps_coordinates"
-[[ -z "${latitude}" || -z "${longitude}" ]] && catch -e "Failed to get GPS coordinates."
+[[ -n "${latitude}" && -n "${longitude}" ]] \
+|| catch "Failed to get GPS coordinates."
 
 redshift_args=(
     -l "${latitude}:${longitude}"
@@ -15,5 +19,5 @@ redshift_args=(
     -m randr
 )
 
-pgrep -x redshift 1> /dev/null && killall -q -w redshift
-bgrun redshift "${redshift_args[@]}"
+pgrep -x redshift 1>/dev/null && killall -q -w redshift
+nohup redshift "${redshift_args[@]}" & disown

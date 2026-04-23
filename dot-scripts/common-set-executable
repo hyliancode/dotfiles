@@ -7,6 +7,7 @@ for file in "${HOME}/.scripts"/*; do
     if head -n 1 "${file}" | grep -q '^#!/bin/bash$'; then
         [[ -x "${file}" ]] && continue
         echo "Making ${file} executable..."
-        chmod +x "${file}" || catch "Failed to make '${file}' executable."
+        chmod +x "${file}" \
+        || catch "Failed to make '${file}' executable."
     fi
 done

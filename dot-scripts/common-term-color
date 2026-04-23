@@ -1,21 +1,31 @@
 #!/bin/bash
 
-chkcmd jq selopt || exit 1
-
 catch() { echo "${1}"; exit 1; }
 
-[[ -f "${HOME}/.color_schemes.json" ]] || catch "Color schemes file not found at ${HOME}/.color_schemes.json"
-readarray -t options < <(jq -r 'del(.comment) | keys[]' "${HOME}/.color_schemes.json" || true)
-[[ ${#options[@]} -eq 0 ]] && catch "No color schemes found in ${HOME}/.color_schemes.json"
-options+=("quit")
+for cmd in jq selopt; do
+	command -v "${cmd}" 1>/dev/null \
+	|| catch "Command not found: '${cmd}'"
+done
 
-scheme="$(selopt -rofi "Select a color scheme: " "${options[@]}" || true)"
-[[ -z "${scheme}" ]] && catch "No color scheme selected. Exiting."
-[[ "${scheme}" == "quit" ]] && echo "Exiting without changes." && exit 0
+[[ -f "${HOME}/.color_schemes.json" ]] \
+|| catch "Color schemes file not found at ${HOME}/.color_schemes.json"
+
+readarray -t options < <(jq -r 'del(.comment) | keys[]' "${HOME}/.color_schemes.json" || true)
+(( "${#options[@]}" > 0 )) \
+|| catch "No color schemes found in ${HOME}/.color_schemes.json"
+
+scheme="$(selopt -rofi "Select a color scheme: " "${options[@]} quit" || true)"
+[[ -n "${scheme}" ]] \
+|| catch "No color scheme selected. Exiting."
+[[ "${scheme}" == "quit" ]] \
+&& { echo "Exiting without changes."; exit 0; }
 
 readarray -t colors < <(jq -r ".\"${scheme}\"[]" "${HOME}/.color_schemes.json" || true)
-[[ ${#colors[@]} -eq 0 ]] && catch "No colors found for scheme '${scheme}'"
-[[ ${#colors[@]} -ne 16 ]] && catch "Expected 16 colors for scheme '${scheme}', found ${#colors[@]}"
+(( "${#colors[@]}" > 0 )) \
+|| catch "No colors found for scheme '${scheme}'"
+
+(( "${#colors[@]}" == 16 )) \
+|| catch "Expected 16 colors, found ${#colors[@]}"
 
 for i in "${!colors[@]}"; do
     printf "\e]4;%d;%s\a" "${i}" "${colors[$i]}"
@@ -25,4 +35,5 @@ printf "\e]10;%s\a" "${colors[7]}" # Foreground
 printf "\e]11;%s\a" "${colors[8]}" # Background
 printf "\e]12;%s\a" "${colors[7]}" # Cursor
 
-{ chkcmd "neofetch" && neofetch; } || { chkcmd "fastfetch" && fastfetch; }
+{ command -v neofetch 1>/dev/null && neofetch; } \
+|| { command -v fastfetch 1>/dev/null && fastfetch; }

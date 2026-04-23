@@ -1,0 +1,49 @@
+#!/bin/bash
+
+chkcmd apt-get fzf || exit 1
+
+_usage() {
+    echo "Usage: ${0##*/} {-i|-r|-u} [query]" >&2
+    exit 1
+}
+
+fzf_options=(
+    --exact
+    --border
+    --multi
+)
+
+_install() {
+    readarray -t to_install < <(apt-cache pkgnames | fzf "${fzf_options[@]}")
+    [[ -n "${to_install[*]}" ]] || exit 0
+    printf -- "Install: <%s>\n" "${to_install[@]}"
+    read -p "Press enter to install..."
+    sudo apt-get install -- "${to_install[@]}"
+}
+
+_remove() {
+    readarray -t to_remove < <(dpkg --get-selections | grep -v deinstall | awk '{print $1}' | fzf "${fzf_options[@]}")
+    [[ -n "${to_remove[*]}" ]] || exit 0
+    printf -- "Remove: <%s>\n" "${to_remove[@]}"
+    read -p "Press enter to remove..."
+    sudo apt-get purge -- "${to_remove[@]}"
+}
+
+_update() {
+    echo -e "\e[32mUpdate apt packages\e[0m"
+    sudo apt-get update
+    sudo apt-get full-upgrade
+
+    if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
+        echo "Linux kernel has been updated and needs to reboot"
+        read -p "Reboot now? [y/N] "
+        [[ "${REPLY}" =~ ^[Yy] ]] && mint-launch-powermenu -n -r
+    fi
+}
+
+case "${1:-}" in
+    -i ) _install "${2:-}" ;;
+    -r ) _remove "${2:-}" ;;
+    -u ) _update ;;
+    * ) _usage ;;
+esac
