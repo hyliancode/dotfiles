@@ -1,6 +1,27 @@
 #!/bin/bash
 
-# check for mounted STUFF drive
-# check for backup dir '${STUFF}/${date}/BraveSoftware.tar.gz'
-# tar 'BraveSoftware' to backup dir
-# keep only recent 2 ${date} folders
+catch() { echo "${1}"; exit 1; }
+
+echo "Backing up Brave"
+
+brave_dir="${HOME}/.config/BraveSoftware"
+[[ -d "${brave_dir}" ]] \
+|| catch "Path not found: '${brave_dir}'"
+
+backup_drive="$(lsblk -no mountpoints | grep -si "/STUFF"$ || true)"
+[[ -d "${backup_drive}" ]] \
+|| catch "Path not found: '${backup_drive}'"
+
+backup_name="BraveSoftware-$(printf "%(%Y-%m-%d)T\n" -1)"
+backup_path_base="${backup_drive}/linux"
+mkdir -p "${backup_path_base}" \
+|| catch "Failed to create '${backup_path_base}'"
+backup_path="${backup_path_base}/${backup_name}"
+
+[[ ! -f "${backup_path}" ]] \
+|| catch "Backup exists: '${backup_path}'"
+
+tar -czvf "${backup_path}" "${brave_dir}" \
+|| catch "Failed to create backup: '${backup_path}'"
+
+echo "Backup complete."
