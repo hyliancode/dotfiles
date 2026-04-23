@@ -24,10 +24,9 @@ paths_to_remove=(
 	"${HOME}/.config/ncmpcpp"
 	"${HOME}/.config/rofi"
 	"${HOME}/.config/sxhkd"
-	"${HOME}/.local/bin/gencreds.swift"
-	"${HOME}/.local/bin/gencreds"
 	"${HOME}/.profile"
 	"${HOME}/.scripts"
+	"${HOME}/.source"
 	"${HOME}/.walls"
 	"${HOME}/.xinitrc"
 )
