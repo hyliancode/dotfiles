@@ -18,13 +18,14 @@ paths_to_remove=(
 	"${HOME}/.color_schemes.json"
 	"${HOME}/.config/bspwm"
 	"${HOME}/.config/easyeffects"
+	"${HOME}/.config/hypr"
 	"${HOME}/.config/mpd"
 	"${HOME}/.config/mpv"
 	"${HOME}/.config/ncmpcpp"
 	"${HOME}/.config/rofi"
 	"${HOME}/.config/sxhkd"
-	"${HOME}/.local/bin/gencreds"
 	"${HOME}/.local/bin/gencreds.swift"
+	"${HOME}/.local/bin/gencreds"
 	"${HOME}/.profile"
 	"${HOME}/.scripts"
 	"${HOME}/.walls"
@@ -32,7 +33,7 @@ paths_to_remove=(
 )
 
 for path_to_remove in "${paths_to_remove[@]}"; do
-	if [[ -e "${path_to_remove}" || -L "${path_to_remove}" ]]; then
+	if [[ -e "${path_to_remove}" || ! -L "${path_to_remove}" ]]; then
 		echo "Moving '${path_to_remove}' to trash"
 		trash-put -f "${path_to_remove}" \
 		|| catch "Failed to move '${path_to_remove}' to trash"
