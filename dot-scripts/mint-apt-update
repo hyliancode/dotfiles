@@ -1,19 +1,21 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1 }
+catch() { echo "${1}"; exit 1; }
 
 for cmd in apt-get fzf; do
     command -v 1>/dev/null || catch "Command not found: '${cmd}'"
 done
 
 echo -e "\e[32mUpdate apt packages\e[0m"
+
 sudo apt-get update \
 || catch "Failed to update package cache"
+
 sudo apt-get full-upgrade \
-|| catch "Failed run 'full-upgrade"
+|| catch "Failed to run 'full-upgrade"
 
 if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
     echo "Linux kernel has been updated and needs to reboot"
     read -p "Reboot now? [y/N] "
-    [[ "${REPLY}" =~ ^[Yy] ]]; :
+    [[ "${REPLY:-N}" =~ ^[Yy] ]] && systemctl reboot
 fi
