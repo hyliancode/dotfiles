@@ -1,0 +1,13 @@
+#!/bin/bash
+
+check_command() {
+	for command in "${@}"; do
+		command -v "${command}" 1>/dev/null \
+		|| cmd_not_found+=("${command}")
+	done
+	[[ -z "${cmd_not_found[*]}" ]] \
+	|| printf "Command not found: %s\n" "${cmd_not_found[@]}"
+	return "${#cmd_not_found[@]}"
+}
+
+check_command "${@}"

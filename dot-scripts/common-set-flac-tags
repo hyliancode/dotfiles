@@ -1,0 +1,46 @@
+#!/bin/bash
+
+catch() { echo "${1}"; exit 1; }
+
+command -v metaflac 1>/dev/null || catch "Command not found: 'metaflac'"
+
+(( "${#}" > 0 )) || catch "No songs given"
+
+for song in "${@}"; do
+    [[ -f "${song}" ]] || { echo "Song not found: '${song}'"; continue; }
+
+    echo "[ ${song} ]"
+
+    genre="$(metaflac --show-tag=GENRE -- "${song}")"
+    album="$(metaflac --show-tag=ALBUM -- "${song}")"
+    album_artist="$(metaflac --show-tag=ALBUMARTIST -- "${song}")"
+    artist="$(metaflac --show-tag=ARTIST -- "${song}")"
+    title="$(metaflac --show-tag=TITLE -- "${song}")"
+    track_number="$(metaflac --show-tag=TRACKNUMBER -- "${song}")"
+
+    genre="${genre##*=}"
+    album="${album##*=}"
+    album_artist="${album_artist##*=}"
+    artist="${artist##*=}"
+    title="${title##*=}"
+    track_number="${track_number##*=}"
+
+	genre="${genre:-"NO_GENRE"}"
+	album="${album:-"NO_ALBUM"}"
+    album_artist="${album_artist:-"NO_ALBUM_ARTIST"}"
+    artist="${artist:-"NO_ARTIST"}"
+    title="${title:-"NO_TITLE"}"
+    track_number="${track_number:-"NO_TRACK_NUMBER"}"
+
+	metaflac --remove-all -- "${song}"
+
+	metaflac --set-tag=GENRE="${genre}" -- "${song}"
+	metaflac --set-tag=ALBUM="${album}" -- "${song}"
+	metaflac --set-tag=ALBUMARTIST="${album_artist}" -- "${song}"
+	metaflac --set-tag=ARTIST="${artist}" -- "${song}"
+	metaflac --set-tag=TITLE="${title}" -- "${song}"
+	metaflac --set-tag=TRACKNUMBER="${track_number}" -- "${song}"
+
+	filename="${album_artist} - ${title}.flac"
+	[[ -f "${filename}" ]] || mv -f -- "${song}" "${filename}"
+done

@@ -2,9 +2,7 @@
 
 catch() { echo "${1}"; exit 1; }
 
-for cmd in apt-get fzf; do
-    command -v 1>/dev/null || catch "Command not found: '${cmd}'"
-done
+chkcmd apt-get fzf || catch "Failed command check"
 
 echo -e "\e[32mUpdate apt packages\e[0m"
 
