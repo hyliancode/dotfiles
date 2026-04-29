@@ -2,43 +2,30 @@
 
 catch() { echo "${1}"; exit 1; }
 
-for cmd in trash-put trash-empty; do
-    command -v "${cmd}" 1>/dev/null \
-    || catch "Command not found: '${cmd}'"
-done
+command -v gio 1>/dev/null || catch "Install 'gio'"
 
 _common_cleanup() {
     echo "Cleaning '/tmp'"
-    sudo trash-put -f /tmp/* 1>/dev/null \
-    || catch "[ROOT] Failed to clean /tmp directory."
-    trash-put -f /tmp/* 1>/dev/null \
-    || catch "[USER] Failed to clean /tmp directory."
+    sudo gio trash -f /tmp/* || catch "[ROOT] Failed to clean /tmp directory."
+    gio trash -f /tmp/* || catch "[USER] Failed to clean /tmp directory."
     
     echo "Cleaning trash"
-    sudo trash-empty -f 1>/dev/null \
-    || catch "[ROOT] Failed to empty trash."
-    trash-empty -f 1>/dev/null \
-    || catch "[USER] Failed to empty trash."
-    echo "Syncing..." && sync
+    sudo gio trash -f --empty || catch "[ROOT] Failed to empty trash."
+    gio trash -f --empty || catch "[USER] Failed to empty trash."
+    echo "Syncing..."
+    sync || catch "Failed to sync."
+
+    echo "Cleaing broken symlinks"
+    find "${HOME}" -xtype l -print -delete || catch "Failed to clean broken symlinks."
+
 }
 
 _debian_cleanup() {
     _common_cleanup
-
-    # old kernel versions
-    sudo apt-get purge $(dpkg -l \
-    | awk '/^ii  linux-image-[0-9]/ {print $2}' \
-    | grep -v "$(uname -r | cut -d- -f1,2)")
 }
 
 _arch_cleanup() {
     _common_cleanup
-
-    # old kernel versions
-    sudo pacman -Rs $(pacman -Qq \
-    | grep -E '^linux(-lts|-zen|-hardened)?$' \
-    | grep -v "$(uname -r | cut -d- -f1)")
-
 }
 
 case "$(grep -si ^"ID_LIKE=" /etc/os-release)" in
