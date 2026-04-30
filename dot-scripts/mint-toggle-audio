@@ -1,7 +1,16 @@
 #!/bin/bash
 
-tv="$(wpctl status -n | grep "alsa_output.pci-0000_0d_00.6.analog-stereo" | grep -oE "[0-9]+" | head -1)"
-desk="$(wpctl status -n | grep "easyeffects_sink" | grep -oE "[0-9]+" | head -1)"
+tv="$(wpctl status -n | grep "alsa_output.pci-0000_0d_00.1.hdmi-stereo" | grep -oE "[0-9]+" | head -1)"
+if ! wpctl inspect "${tv}" &>/dev/null; then
+    echo "Unable to get sink id for 'tv'"
+    exit 1
+fi
+
+desk="$(wpctl status -n | grep "alsa_output.pci-0000_0d_00.6.analog-stereo" | grep -oE "[0-9]+" | head -1)"
+if ! wpctl inspect "${desk}" &>/dev/null; then
+    echo "Unable to get sink id for 'desk'"
+    exit 1
+fi
 
 usage() {
     echo "${0##*/} <tv|desk>"
@@ -9,7 +18,13 @@ usage() {
 }
 
 case "${1}" in
-    "tv" ) wpctl set-default "${tv}" ;;
-    "desk" ) wpctl set-default "${desk}" ;;
+    "tv" ) 
+        wpctl set-volume "${tv}" 25%
+        wpctl set-default "${tv}"
+        ;;
+    "desk" )
+        wpctl set-volume "${desk}" 25%
+        wpctl set-default "${desk}"
+        ;;
     * ) usage ;;
 esac
