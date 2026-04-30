@@ -9,7 +9,13 @@ usage() {
 }
 
 case "${1}" in
-    "on" ) xrandr --output "${tv}" --mode 1920x1080 --pos 0x0 --rotate normal --output "${desk}" --off ;;
-    "off" ) xrandr --output "${tv}" --off --output "${desk}" --primary --mode 1920x1080 --pos 1920x0 --rotate normal ;;
+    "on" )
+        xrandr --output "${tv}" --mode 1920x1080 --pos 0x0 --rotate normal --output "${desk}" --off
+        toggle-mint-audio tv
+        ;;
+    "off" )
+        xrandr --output "${tv}" --off --output "${desk}" --primary --mode 1920x1080 --pos 1920x0 --rotate normal
+        toggle-mint-audio desk
+        ;;
     * ) usage ;;
 esac
