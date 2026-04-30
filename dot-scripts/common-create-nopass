@@ -1,0 +1,40 @@
+#!/bin/bash
+
+nopass_file="/etc/sudoers.d/nopass"
+
+_create_nopass_file() {
+	sudo tee "${nopass_file}" <<- EOF
+		%sudo ALL=(ALL) NOPASSWD: /usr/bin/apt-get
+		%sudo ALL=(ALL) NOPASSWD: /usr/local/bin/apt
+		%sudo ALL=(ALL) NOPASSWD: /usr/bin/gio
+		%sudo ALL=(ALL) NOPASSWD: /usr/bin/dpkg
+	EOF
+
+	if [[ -f "${nopass_file}" ]]; then
+		echo "File created: '${nopass_file}'"
+	else
+		echo "Failed to create '${nopass_file}'"
+		exit 1
+	fi
+
+	if sudo chmod 440 "${nopass_file}" && [[ $(stat -c "%a %u" "${nopass_file}") == "440 0" ]]; then
+		echo "File permissions set: '${nopass_file}'"
+	else
+		echo "Failed to set permissions on '${nopass_file}'"
+		exit 1
+	fi
+}
+
+if [[ -f "${nopass_file}" ]]; then
+	echo "File exists: '${nopass_file}'"
+	read -p "Remove nopass file? [y/N]: "
+	if [[ "${REPLY:-NO}" =~ ^[Yy] ]]; then
+		echo "Removing '${nopass_file}'"
+		sudo rm -f "${nopass_file}"
+		_create_nopass_file
+	fi
+	exit 0
+else
+	_create_nopass_file
+	exit 0
+fi
