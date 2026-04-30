@@ -1,13 +1,20 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
+if ! command -v metaflac 1>/dev/null; then
+    echo "Command not found: 'metaflac'"
+    exit 1
+fi
 
-command -v metaflac 1>/dev/null || catch "Command not found: 'metaflac'"
-
-(( "${#}" > 0 )) || catch "No songs given"
+if (( "${#}" = 0 )); then
+    echo "No songs given"
+    exit 1
+fi
 
 for song in "${@}"; do
-    [[ -f "${song}" ]] || { echo "Song not found: '${song}'"; continue; }
+    if [[ -f "${song}" ]]; then
+        echo "Song not found: '${song}'"
+        continue
+    fi
 
     echo "[ ${song} ]"
 
@@ -42,5 +49,10 @@ for song in "${@}"; do
 	metaflac --set-tag=TRACKNUMBER="${track_number}" -- "${song}"
 
 	filename="${album_artist} - ${title}.flac"
-	[[ -f "${filename}" ]] || mv -f -- "${song}" "${filename}"
+	if [[ ! -f "${filename}" ]]; then
+        echo "${song} -> ${filename}"
+        mv -- "${song}" "${filename}"
+    else
+        continue
+    fi
 done

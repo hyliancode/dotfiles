@@ -1,10 +1,18 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
+folder="${1}"
 
-folder="$(realpath "${1}")"
-[[ -d "${folder}" ]] || catch "Invalid folder path"
-m3u_name="${folder##*/}"
+if [[ -z "${folder}" ]]; then
+    echo "No folder given"
+    exit 1
+elif [[ ! -d "${folder}" ]]; then
+    echo "Folder not found: '${folder}'"
+    exit 1
+fi
+
+folder_realpath="$(realpath "${folder}")"
+
+m3u_file="${folder##*/}.m3u"
 
 file_types=(
     -name "*.flac" -o
@@ -15,7 +23,16 @@ file_types=(
     -name "*.webm"
 )
 
-readarray -t files < <(find "${folder}" -type f \( "${file_types[@]}" \) -exec realpath {} \; | sort -V || true)
-[[ -z "${files[*]}" ]] && catch "No media files found in the specified folder"
+find_args=(
+    "${folder_realpath}"
+    -type f
+    \( "${file_types[@]}" \)
+)
 
-printf "%s\n" "${files[@]}" > "${m3u_name}.m3u"
+readarray -t files < <(find "${find_args[@]}" | sort -V)
+if (( "${#files[@]}" == 0 )); then
+    echo "No media files found in the specified folder"
+    exit 1
+fi
+
+printf "%s\n" "${files[@]}" > "${m3u_file}"

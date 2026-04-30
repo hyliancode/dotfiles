@@ -1,0 +1,15 @@
+#!/bin/bash
+
+tv="DisplayPort-0"
+desk="DisplayPort-1"
+
+usage() {
+    echo "${0##*/} <on|off>"
+    exit 1
+}
+
+case "${1}" in
+    "on" ) xrandr --output "${tv}" --mode 1920x1080 --pos 0x0 --rotate normal --output "${desk}" --primary --mode 1920x1080 --pos 1920x0 --rotate normal ;;
+    "off" ) xrandr --output "${tv}" --off --output "${desk}" --primary --mode 1920x1080 --pos 1920x0 --rotate normal ;;
+    * ) usage ;;
+esac

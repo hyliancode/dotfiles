@@ -1,17 +1,10 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
+if [[ "${PWD}" != "${HOME}/dotfiles" ]]; then
+	echo "Run this script from '${HOME}/dotfiles'"
+	exit 1
+fi
 
-[[ "${PWD}" == "${HOME}/dotfiles" ]] \
-|| catch "Run this script from '${HOME}/dotfiles'"
-
-for cmd in trash-put stow; do
-	command -v "${cmd}" 1>/dev/null \
-	|| catch "Command not found: '${cmd}'"
-done
-
-# these need to be manually added
-# needed so the script can make-way for 'stow' command
 paths_to_remove=(
 	"${HOME}/.bash_profile"
 	"${HOME}/.bashrc"
@@ -21,8 +14,11 @@ paths_to_remove=(
 	"${HOME}/.config/mpd"
 	"${HOME}/.config/mpv"
 	"${HOME}/.config/ncmpcpp"
+	"${HOME}/.config/polybar"
 	"${HOME}/.config/rofi"
 	"${HOME}/.config/sxhkd"
+	"${HOME}/.config/topgrade.d"
+	"${HOME}/.config/waybar"
 	"${HOME}/.profile"
 	"${HOME}/.scripts"
 	"${HOME}/.source"
@@ -32,9 +28,8 @@ paths_to_remove=(
 
 for path_to_remove in "${paths_to_remove[@]}"; do
 	if [[ -e "${path_to_remove}" && ! -L "${path_to_remove}" ]]; then
-		echo "Moving '${path_to_remove}' to trash"
-		trash-put -f "${path_to_remove}" \
-		|| catch "Failed to move '${path_to_remove}' to trash"
+		echo "Removing '${path_to_remove}'"
+		gio trash -f "${path_to_remove}" || catch "Failed to remove '${path_to_remove}'"
 	else
 		continue
 	fi

@@ -1,23 +1,19 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
-
-command -v gio 1>/dev/null || catch "Install 'gio'"
-
 _common_cleanup() {
-    echo "Cleaning '/tmp'"
-    sudo gio trash -f /tmp/* || catch "[ROOT] Failed to clean /tmp directory."
-    gio trash -f /tmp/* || catch "[USER] Failed to clean /tmp directory."
+    echo "Emptying '/tmp'"
+    sudo gio trash -f /tmp/*
+    gio trash -f /tmp/*
     
-    echo "Cleaning trash"
-    sudo gio trash -f --empty || catch "[ROOT] Failed to empty trash."
-    gio trash -f --empty || catch "[USER] Failed to empty trash."
-    echo "Syncing..."
-    sync || catch "Failed to sync."
+    echo "Emptying trash"
+    sudo gio trash -f --empty
+    gio trash -f --empty
 
-    echo "Cleaing broken symlinks"
-    find "${HOME}" -xtype l -print -delete || catch "Failed to clean broken symlinks."
+    echo "Removing broken symlinks"
+    find "${HOME}" -xtype l -print -delete
 
+    echo "Syncing"
+    sync
 }
 
 _debian_cleanup() {
@@ -28,7 +24,7 @@ _arch_cleanup() {
     _common_cleanup
 }
 
-case "$(grep -si ^"ID_LIKE=" /etc/os-release)" in
+case "$(grep -siE "^ID_LIKE=|^ID=" /etc/os-release)" in
     *debian* ) _debian_cleanup ;;
     *arch* ) _arch_cleanup ;;
     * ) echo "Unsupported distribution" ;;
