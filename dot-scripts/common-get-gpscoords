@@ -1,18 +1,18 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
-
 for cmd in curl jq; do
-    command -v "${cmd}" 1>/dev/null \
-    || catch "Command not found: '${cmd}'"
+    if command -v "${cmd}" 1>/dev/null; then
+        echo "Install '${cmd}'"
+        exit 1
+    fi
 done
 
 get_coordinates() {
     echo "Getting GPS coordinates..."
-    coords="$(curl --fail http://ip-api.com/json?fields=lat,lon || true)"
+    coords="$(curl --fail http://ip-api.com/json?fields=lat,lon)"
     if [[ -n "${coords}" ]]; then
-        latitude=$(echo "${coords}" | jq -r '.lat' || true)
-        longitude=$(echo "${coords}" | jq -r '.lon' || true)
+        latitude=$(echo "${coords}" | jq -r '.lat')
+        longitude=$(echo "${coords}" | jq -r '.lon')
         echo "GPS coordinates obtained: ${latitude}, ${longitude}"
         echo -e "${latitude}\n${longitude}" > "${HOME}/.gps_coordinates"
     else

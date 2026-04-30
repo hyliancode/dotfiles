@@ -1,25 +1,19 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
-ask_reboot() {
-    read -p "${1} [y/N]: "
-    if [[ "${REPLY}" =~ ^[yY] ]]; then
+echo -e "\e[32mUpdate pacman packages\e[0m"
+
+sudo pacman -Syyu
+
+if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
+    read -p "Kernel has been updated and needs a reboot. Reboot now? [y/N]: "
+    if [[ "${REPLY:-NO}" =~ ^[Yy] ]]; then
         hyprctl dispatch exit
         while pgrep -x hyprland &>/dev/null; do
             sleep 0.1
         done
         systemctl reboot
     else
-        echo "Please reboot as soon as possible to apply updates."
-        exit 0;
+        echo "Please reboot as soon as possible to apply kernel updates."
+        exit 0
     fi
-}
-
-command -v pacman 1>/dev/null \
-|| catch "Command not found: 'pacman'"
-
-echo -e "\e[32mUpdate pacman packages\e[0m"
-sudo pacman -Syyu --noconfirm
-
-[[ -d /usr/lib/modules/$(uname -r) ]] \
-|| ask_reboot "Linux kernel has been updated. Reboot?"
+fi

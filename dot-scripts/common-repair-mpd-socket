@@ -1,25 +1,23 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
-
 if systemctl is-active --quiet mpd; then
-    sudo systemctl stop mpd || catch "Failed to stop system level 'mpd'"
-    sudo systemctl disable mpd || catch "Failed to disable system level 'mpd'"
+    sudo systemctl stop mpd
+    sudo systemctl disable mpd
 fi
 
 if [[ -S /run/mpd/socket ]]; then
-    sudo rm -f /run/mpd/socket || catch "Failed to remove '/run/mpd/socket'"
+    sudo rm -f /run/mpd/socket
 fi
 
 if systemctl --user is-active --quiet mpd; then
     echo "User-level MPD socket is running."
 else
-	systemctl --user enable --now mpd.socket || catch "Failed to enable user MPD socket"
-	systemctl --user restart mpd.socket || catch "Failed to restart user MPD socket"
+	systemctl --user enable --now mpd.socket
+	systemctl --user restart mpd.socket
 fi
 
 if ! pgrep -x mpd; then
-	mpd || catch "Failed to start MPD"
+	mpd
 else
 	echo "MPD is already running."
 fi

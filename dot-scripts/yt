@@ -1,7 +1,5 @@
 #!/bin/bash
 
-chkcmd yt-dlp || exit 1
-
 if [[ "${1:-}" == "a" ]]; then
     is_audio=0
     shift # remove the first option from argument list

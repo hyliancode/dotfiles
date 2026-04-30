@@ -1,13 +1,10 @@
 #!/bin/bash
 
-catch() { echo "${1}"; exit 1; }
-
 for file in "${HOME}/.scripts"/*; do
-    [[ -f "${file}" ]] || continue
-    if head -n 1 "${file}" | grep -q '^#!/bin/bash$'; then
-        [[ -x "${file}" ]] && continue
+    if head -n 1 "${file}" | grep -q '^#!/bin/bash$' && [[ ! -x "${file}" ]]; then
         echo "Making ${file} executable..."
-        chmod +x "${file}" \
-        || catch "Failed to make '${file}' executable."
+        chmod +x "${file}"
+    else
+        continue
     fi
 done
