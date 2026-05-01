@@ -5,18 +5,18 @@ if ! command -v metaflac 1>/dev/null; then
     exit 1
 fi
 
-if (( "${#}" = 0 )); then
+if (( "${#}" == 0 )); then
     echo "No songs given"
     exit 1
 fi
 
 for song in "${@}"; do
-    if [[ -f "${song}" ]]; then
+    if [[ ! -f "${song}" ]]; then
         echo "Song not found: '${song}'"
         continue
     fi
 
-    echo "[ ${song} ]"
+    echo -e "\n--==<[( ${song} )]>==--"
 
     genre="$(metaflac --show-tag=GENRE -- "${song}")"
     album="$(metaflac --show-tag=ALBUM -- "${song}")"
@@ -38,6 +38,23 @@ for song in "${@}"; do
     artist="${artist:-"NO_ARTIST"}"
     title="${title:-"NO_TITLE"}"
     track_number="${track_number:-"NO_TRACK_NUMBER"}"
+	cover_file_1="${album_artist//[^[:alnum:]]/_}"
+	cover_file_2="${album//[^[:alnum:]]/_}"
+	cover_file="${cover_file_1}_${cover_file_2}_cover.png"
+	if [[ ! -f "${cover_file}" ]]; then
+		if ! metaflac --export-picture-to="${cover_file}" "${song}" &>/dev/null; then
+			echo "  - Could not export cover (probably does not have one)"
+        else
+            echo "  + Cover -> ${cover_file}"
+		fi
+	fi
+
+    echo "  + Genre -> ${genre}"
+    echo "  + Album -> ${album}"
+    echo "  + Album Artist -> ${album_artist}"
+    echo "  + Artist -> ${artist}"
+    echo "  + Title -> ${title}"
+    echo "  + Track Number -> ${track_number}"
 
 	metaflac --remove-all -- "${song}"
 
@@ -47,10 +64,13 @@ for song in "${@}"; do
 	metaflac --set-tag=ARTIST="${artist}" -- "${song}"
 	metaflac --set-tag=TITLE="${title}" -- "${song}"
 	metaflac --set-tag=TRACKNUMBER="${track_number}" -- "${song}"
+	if ! metaflac --import-picture-from="${cover_file}" "${song}" &>/dev/null; then
+		echo "  - Could not import cover (probably does not have one)"
+	fi
 
-	filename="${album_artist} - ${title}.flac"
+	filename="${album_artist//[^[:alnum:] ]/} - ${title//[^[:alnum:] ]/}.flac"
 	if [[ ! -f "${filename}" ]]; then
-        echo "${song} -> ${filename}"
+        echo "  + ${song} -> ${filename}"
         mv -- "${song}" "${filename}"
     else
         continue
