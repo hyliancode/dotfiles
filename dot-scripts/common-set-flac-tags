@@ -72,7 +72,9 @@ for song in "${@}"; do
 	if [[ ! -f "${filename}" ]]; then
         echo "  + ${song} -> ${filename}"
         mv -- "${song}" "${filename}"
-    else
-        continue
     fi
+
+    # this is completely unnecessary :)
+    printf -v dashes "%*s" "${#song}" ""
+    echo -e "--==<[( ${dashes// /-} )]>==--\n"
 done
