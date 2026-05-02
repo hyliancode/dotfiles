@@ -1,9 +1,16 @@
 #! /bin/sh
 
-pgrep -x sxhkd 1> /dev/null || sxhkd &
-pgrep -x polybar 1> /dev/null || polybar &
-pgrep -x picom 1> /dev/null || picom &
-command -v setwall 1> /dev/null && setwall
+if ! pgrep -x sxhkd 1>/dev/null; then
+    sxhkd &
+fi
+
+if ! pgrep -x polybar 1>/dev/null; then
+    polybar &
+fi
+
+if ! pgrep -x picom 1>/dev/null; then
+    picom &
+fi
 
 bspc monitor -d I II III IV V VI VII VIII IX X
 
