@@ -10,12 +10,12 @@
 
 window#waybar {
     background: transparent;
-    color: white;
+    color: #1e1e2e;
 }
 
 tooltip {
-    background: rgba(43, 48, 59, 0.5);
-    border: 1px solid rgba(100, 114, 125, 0.5);
+    background: #1e1e2e;
+    color: #cdd6f4;
 }
 
 tooltip label {
@@ -23,15 +23,16 @@ tooltip label {
 }
 
 #workspaces button {
-    padding: 2px 10px;
-    border-radius: 6px;
-    margin: 0 4px;;
-    background: transparent;
-    color: white;
+    padding: 4px 12px;
+    margin: 6px 0 6px 10px;
+    border-radius: 8px;
+    background: #cdd6f4;
+    color: #1e1e2e;
 }
 
 #workspaces button.focused {
-    background: #64727D;
+    background: #cdd6f4;
+    color: #1e1e2e;
     min-width: 40px;
 }
 
@@ -41,37 +42,28 @@ tooltip label {
 #cpu,
 #memory,
 #idle_inhibitor {
-    padding: 2px 10px;
-    border-radius: 6px;
-    margin: 0 4px;
+    padding: 4px 12px;
+    margin: 6px 10px 6px 0;
+    border: none;
+    border-radius: 8px;
 }
 
 #clock {
-    background-color: #64727D;
-}
-
-#battery {
-    background-color: #ffffff;
-    color: black;
-}
-
-#battery.charging {
-    color: white;
-    background-color: #26A65B;
+    background-color: #b4befe;
 }
 
 #pulseaudio {
-    background-color: #64727D;
+    background-color: #a6e3a1;
 }
 
 #cpu {
-    background-color: #64727D;
+    background-color: #89dceb;
 }
 
 #memory {
-    background-color: #64727D;
+    background-color: #fab387;
 }
 
 #idle_inhibitor {
-    background-color: #64727D;
+    background-color: #f5c2e7;
 }

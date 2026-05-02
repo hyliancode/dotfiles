@@ -11,24 +11,13 @@
         "idle_inhibitor",
         "pulseaudio",
         "cpu",
-        "memory",
-        "battery"
+        "memory"
     ],
     "sway/window": {
         "max-length": 40
     },
     "clock": {
         "format": "{:%a, %b %d  %R}"
-    },
-    "battery": {
-        "format": "{capacity}% {icon}",
-        "format-icons": [
-            "",
-            "",
-            "",
-            "",
-            ""
-        ]
     },
     "pulseaudio": {
         "format": "{volume}% {icon}",
@@ -43,7 +32,8 @@
             ]
         },
         "scroll-step": 5,
-        "on-click": "pavucontrol",
+        "on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "pavucontrol",
         "ignored-sinks": [
             "Easy Effects Sink"
         ]
@@ -66,20 +56,18 @@
             "deactivated": ""
         }
     },
-    "hyprland/workspaces": {
+    "sway/workspaces": {
+        "disable-scroll": false,
+        "disable-scroll-wraparound": true,
+        "all-outputs": true,
         "format": "{icon}",
         "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "6": "",
-            "active": "",
-            "default": ""
+            "urgent": "(! O.O )",
+            "focused": "(> ^_^ )",
+            "default": "(z -_- )"
         },
         "persistent-workspaces": {
-            "*": 6
+            "*": []
         }
     }
 }
