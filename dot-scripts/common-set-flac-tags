@@ -41,13 +41,13 @@ for song in "${@}"; do
         convert -size 500x500 xc:black "${picture_file}"
 	fi
 
-    echo "  + Picture       -> ${picture_file}"
-    echo "  + Genre         -> ${genre}"
-    echo "  + Album         -> ${album}"
-    echo "  + Album Artist  -> ${album_artist}"
-    echo "  + Artist        -> ${artist}"
-    echo "  + Title         -> ${title}"
-    echo "  + Track Number  -> ${track_number}"
+    echo "  + Picture -> ${picture_file}"
+    echo "  + Genre -> ${genre}"
+    echo "  + Album -> ${album}"
+    echo "  + Album Artist -> ${album_artist}"
+    echo "  + Artist -> ${artist}"
+    echo "  + Title -> ${title}"
+    echo "  + Track Number -> ${track_number}"
 
 	metaflac --remove-all -- "${song}"
 
