@@ -67,7 +67,8 @@
             "default": "(z -_- )"
         },
         "persistent-workspaces": {
-            "*": []
+            "1": [],
+            "2": []
         }
     }
 }
