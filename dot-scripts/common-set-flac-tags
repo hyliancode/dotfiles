@@ -18,43 +18,36 @@ for song in "${@}"; do
 
     echo -e "\n--==<[( ${song} )]>==--"
 
-    genre="$(metaflac --show-tag=GENRE -- "${song}")"
     album="$(metaflac --show-tag=ALBUM -- "${song}")"
     album_artist="$(metaflac --show-tag=ALBUMARTIST -- "${song}")"
     artist="$(metaflac --show-tag=ARTIST -- "${song}")"
     title="$(metaflac --show-tag=TITLE -- "${song}")"
     track_number="$(metaflac --show-tag=TRACKNUMBER -- "${song}")"
 
-    genre="${genre##*=}"
     album="${album##*=}"
     album_artist="${album_artist##*=}"
     artist="${artist##*=}"
     title="${title##*=}"
     track_number="${track_number##*=}"
 
-	genre="${genre:-"NO_GENRE"}"
+	genre="Music"
 	album="${album:-"NO_ALBUM"}"
     album_artist="${album_artist:-"NO_ALBUM_ARTIST"}"
     artist="${artist:-"NO_ARTIST"}"
     title="${title:-"NO_TITLE"}"
     track_number="${track_number:-"NO_TRACK_NUMBER"}"
-	cover_file_1="${album_artist//[^[:alnum:]]/_}"
-	cover_file_2="${album//[^[:alnum:]]/_}"
-	cover_file="${cover_file_1}_${cover_file_2}_cover.png"
-	if [[ ! -f "${cover_file}" ]]; then
-		if ! metaflac --export-picture-to="${cover_file}" "${song}" &>/dev/null; then
-			echo "  - Could not export cover (probably does not have one)"
-        else
-            echo "  + Cover -> ${cover_file}"
-		fi
+    picture_file="picture.png"
+	if [[ ! -f "${picture_file}" ]]; then
+        convert -size 500x500 xc:black "${picture_file}"
 	fi
 
-    echo "  + Genre -> ${genre}"
-    echo "  + Album -> ${album}"
-    echo "  + Album Artist -> ${album_artist}"
-    echo "  + Artist -> ${artist}"
-    echo "  + Title -> ${title}"
-    echo "  + Track Number -> ${track_number}"
+    echo "  + Picture       -> ${picture_file}"
+    echo "  + Genre         -> ${genre}"
+    echo "  + Album         -> ${album}"
+    echo "  + Album Artist  -> ${album_artist}"
+    echo "  + Artist        -> ${artist}"
+    echo "  + Title         -> ${title}"
+    echo "  + Track Number  -> ${track_number}"
 
 	metaflac --remove-all -- "${song}"
 
@@ -64,11 +57,11 @@ for song in "${@}"; do
 	metaflac --set-tag=ARTIST="${artist}" -- "${song}"
 	metaflac --set-tag=TITLE="${title}" -- "${song}"
 	metaflac --set-tag=TRACKNUMBER="${track_number}" -- "${song}"
-	if ! metaflac --import-picture-from="${cover_file}" "${song}" &>/dev/null; then
-		echo "  - Could not import cover (probably does not have one)"
+	if ! metaflac --import-picture-from="${picture_file}" "${song}" &>/dev/null; then
+		echo "  - Could not import picture"
 	fi
 
-	filename="${album_artist//[^[:alnum:] ]/} - ${title//[^[:alnum:] ]/}.flac"
+	filename="${album_artist//[^[:alnum:] \(\)\-]/} - ${title//[^[:alnum:] \(\)\-]/}.flac"
 	if [[ ! -f "${filename}" ]]; then
         echo "  + ${song} -> ${filename}"
         mv -- "${song}" "${filename}"
