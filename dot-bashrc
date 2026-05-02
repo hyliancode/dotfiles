@@ -19,6 +19,9 @@ ${HOME}/.scripts"
 
 alias ls='ls --color=auto'
 alias ll='ls -la --color=auto'
+fig() {
+    figlet "${@}" | boxes -d shell | xclip -selection clipboard
+}
 
 export BROWSER=brave-browser
 export EDITOR=edit
