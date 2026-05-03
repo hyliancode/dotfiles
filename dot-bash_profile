@@ -3,7 +3,3 @@
 if [[ -f "${HOME}/.bashrc" ]]; then
     source "${HOME}/.bashrc"
 fi
-
-source "/home/bee/.local/share/swiftly/env.sh"
-. "/home/bee/.deno/env"
-source /home/bee/.local/share/bash-completion/completions/deno.bash

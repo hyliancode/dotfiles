@@ -1,7 +1,7 @@
 --dir=~/dotfiles
 --target=~
 --dotfiles
---verbose=3
+--verbose=2
 
 --ignore=^install$
 --ignore=README.*

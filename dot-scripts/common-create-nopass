@@ -2,12 +2,13 @@
 
 nopass_file="/etc/sudoers.d/nopass"
 
-_create_nopass_file() {
+create_nopass_file() {
 	sudo tee "${nopass_file}" <<- EOF
 		%sudo ALL=(ALL) NOPASSWD: /usr/bin/apt-get
-		%sudo ALL=(ALL) NOPASSWD: /usr/local/bin/apt
-		%sudo ALL=(ALL) NOPASSWD: /usr/bin/gio
 		%sudo ALL=(ALL) NOPASSWD: /usr/bin/dpkg
+		%sudo ALL=(ALL) NOPASSWD: /usr/bin/gio
+		%sudo ALL=(ALL) NOPASSWD: /usr/bin/topgrade
+		%sudo ALL=(ALL) NOPASSWD: /usr/local/bin/apt
 	EOF
 
 	if [[ -f "${nopass_file}" ]]; then
@@ -31,10 +32,10 @@ if [[ -f "${nopass_file}" ]]; then
 	if [[ "${REPLY:-NO}" =~ ^[Yy] ]]; then
 		echo "Removing '${nopass_file}'"
 		sudo rm -f "${nopass_file}"
-		_create_nopass_file
+		create_nopass_file
 	fi
 	exit 0
 else
-	_create_nopass_file
+	create_nopass_file
 	exit 0
 fi

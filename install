@@ -21,14 +21,13 @@ paths_to_remove=(
 	"${HOME}/.config/waybar"
 	"${HOME}/.profile"
 	"${HOME}/.scripts"
-	"${HOME}/.source"
 	"${HOME}/.xinitrc"
 )
 
 for path_to_remove in "${paths_to_remove[@]}"; do
 	if [[ -e "${path_to_remove}" && ! -L "${path_to_remove}" ]]; then
 		echo "Removing '${path_to_remove}'"
-		gio trash -f "${path_to_remove}" || catch "Failed to remove '${path_to_remove}'"
+		gio trash -f "${path_to_remove}"
 	else
 		continue
 	fi
