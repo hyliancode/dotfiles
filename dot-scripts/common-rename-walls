@@ -1,13 +1,21 @@
 #!/bin/bash
+shopt -s nullglob
 
-walls_dir="${HOME}/dotfiles/dot-walls"
-walls=("${walls_dir}"/*.jpg "${walls_dir}"/*.jpeg "${walls_dir}"/*.png)
-if (( ${#walls[@]} == 0 )); then
+walls_dir="${HOME}/Walls/original"
+walls=("${walls_dir}"/*.{jpg,jpeg,png})
+if (( "${#walls[@]}" == 0 )); then
     echo "No walls found in '${walls_dir}'"
     exit 1
 fi
 
 for wall in "${walls[@]}"; do
+    wall_basename="${wall##*/}"
+    wall_basename_no_ext="${wall_basename%%.*}"
+    if [[ "${wall_basename_no_ext}" =~ ^[0-9a-f]{8}$ ]]; then
+        echo "Already hexified: ${wall}"
+        continue
+    fi
+
     random_hex=$(openssl rand -hex 4)
     ext="${wall##*.}"
     new_file_name="${walls_dir}/${random_hex,,}.jpg"
