@@ -19,6 +19,8 @@ ${HOME}/.scripts"
 
 alias ls='ls --color=auto'
 alias ll='ls -la --color=auto'
+alias ytv='yt-dlp -t mp4'
+alias yta='yt-dlp -t aac'
 fig() {
     figlet "${@}" | boxes -d shell | xclip -selection clipboard
 }
