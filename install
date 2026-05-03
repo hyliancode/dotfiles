@@ -22,7 +22,6 @@ paths_to_remove=(
 	"${HOME}/.profile"
 	"${HOME}/.scripts"
 	"${HOME}/.source"
-	"${HOME}/.walls"
 	"${HOME}/.xinitrc"
 )
 
